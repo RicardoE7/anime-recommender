@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendations</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+<header>
+    <h1>Welcome, <span id="username">User</span>!</h1>
+    <nav>
+        <a href="profile.html">Profile</a>
+        <a href="logout.html">Logout</a>
+    </nav>
+</header>
+
+<main>
+    <section id="recommendations">
+        <h2>Recommended Anime for You</h2>
+        <div id="anime-list">
+            <!-- Recommended anime will be dynamically inserted here -->
+        </div>
+    </section>
+</main>
+
+
+<!-- Modal for Anime Details (optional) -->
+<div id="anime-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="anime-title">Anime Title</h2>
+        <p id="anime-description">Description of the anime.</p>
+    </div>
+</div>
+<footer>
+    <p>&copy; 2024 Anime Recommender. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
