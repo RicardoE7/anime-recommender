@@ -1,39 +1,28 @@
 package com.watchmoreanime.domain;
 
-import java.util.Set;
-
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "anime")
 public class Anime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String title;
-    
-    private String genre;
-    
-    private int episodeCount;
-    
-    @ManyToOne
-    @JoinColumn(name = "studio_id")
-    private Studio studio;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private Author author;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @OneToMany(mappedBy = "anime")
-    private Set<Rating> ratings;
+	@Column(nullable = false)
+	private String title;
 
+	@Column(nullable = false)
+	private String genre;
+
+	@Column(nullable = false)
+	private int episodeCount;
+
+	@Column(nullable = false)
+	private String releaseDate;
+
+	// Getters and Setters
 	public Long getId() {
 		return id;
 	}
@@ -66,30 +55,11 @@ public class Anime {
 		this.episodeCount = episodeCount;
 	}
 
-	public Studio getStudio() {
-		return studio;
+	public String getReleaseDate() {
+		return releaseDate;
 	}
 
-	public void setStudio(Studio studio) {
-		this.studio = studio;
+	public void setReleaseDate(String releaseDate) {
+		this.releaseDate = releaseDate;
 	}
-
-	public Author getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(Author author) {
-		this.author = author;
-	}
-
-	public Set<Rating> getRatings() {
-		return ratings;
-	}
-
-	public void setRatings(Set<Rating> ratings) {
-		this.ratings = ratings;
-	}
-
-    
 }
-

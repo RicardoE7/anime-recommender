@@ -19,12 +19,11 @@
 <main>
     <section id="recommendations">
         <h2>Recommended Anime for You</h2>
-        <div id="anime-list">
+        <div id="anime-list" class="anime-grid">
             <!-- Recommended anime will be dynamically inserted here -->
         </div>
     </section>
 </main>
-
 
 <!-- Modal for Anime Details (optional) -->
 <div id="anime-modal" class="modal">
@@ -34,9 +33,154 @@
         <p id="anime-description">Description of the anime.</p>
     </div>
 </div>
+
 <footer>
     <p>&copy; 2024 Anime Recommender. All rights reserved.</p>
 </footer>
 
+<script>
+    async function fetchAnimeRecommendations() {
+        const query = `
+        {
+            Page(page: 1, perPage: 10) {
+                media(type: ANIME, sort: POPULARITY_DESC) {
+                    id
+                    title {
+                        romaji
+                    }
+                    episodes
+                    genres
+                    coverImage {
+                        large
+                    }
+                    description
+                }
+            }
+        }`;
+
+        const url = 'https://graphql.anilist.co';
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query
+            })
+        };
+
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            const animeList = data.data.Page.media;
+            displayAnime(animeList);
+        } catch (error) {
+            console.error('Error fetching anime recommendations:', error);
+        }
+    }
+
+    function displayAnime(animeList) {
+        const animeListDiv = document.getElementById('anime-list');
+
+        animeList.forEach(anime => {
+            const animeCard = `
+                <div class="anime-card">
+                    <h3>${anime.title.romaji}</h3>
+                    <img src="${anime.coverImage.large}" alt="${anime.title.romaji} Cover Image" class="anime-cover">
+                    <p>${anime.description ? anime.description.substring(0, 100) + '...' : 'No description available'}</p>
+                    <p>Episodes: ${anime.episodes}</p>
+                    <p>Genres: ${anime.genres.join(', ')}</p>
+                    <button onclick="showAnimeDetails('${anime.title.romaji}', '${anime.description}')">Details</button>
+                </div>`;
+            animeListDiv.innerHTML += animeCard;
+        });
+    }
+
+    function showAnimeDetails(title, description) {
+        const modal = document.getElementById('anime-modal');
+        const modalTitle = document.getElementById('anime-title');
+        const modalDescription = document.getElementById('anime-description');
+
+        modalTitle.textContent = title;
+        modalDescription.textContent = description || 'No description available';
+
+        modal.style.display = 'block';
+
+        // Close the modal
+        const closeModal = document.getElementsByClassName('close')[0];
+        closeModal.onclick = function () {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+
+    // Fetch anime recommendations when the page loads
+    fetchAnimeRecommendations();
+</script>
+
+<style>
+    .anime-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .anime-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .anime-cover {
+        width: 150px;
+        height: 225px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    /* Modal styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
 </body>
 </html>
+
