@@ -1,14 +1,61 @@
-.anime-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+/* Header styling */
+header {
+    position: relative;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Nav styling within the header */
+header nav {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+header nav a {
+    margin-left: 10px; /* Space between links */
+    text-decoration: none;
+    color: #007bff;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+.anime-scroll {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 20px; /* Space between anime cards */
+    padding: 10px;
+    scroll-behavior: smooth; /* Smooth scrolling effect */
+    -webkit-overflow-scrolling: touch; /* Enable momentum scrolling for touch devices */
+    will-change: scroll; /* Hint browser to optimize for scrolling */
+    -webkit-user-select: none; /* Disable text selection on WebKit browsers */
+    -moz-user-select: none; /* Disable text selection on Firefox */
+    -ms-user-select: none; /* Disable text selection on Internet Explorer/Edge */
+    user-select: none; /* Disable text selection on other browsers */
+    box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
 }
 
 .anime-card {
+    flex: 0 0 auto; /* Prevent the anime card from shrinking */
+    width: 250px; /* Fixed width for each card */
     border: 1px solid #ddd;
     padding: 15px;
     border-radius: 8px;
     text-align: center;
+    background-color: #fff;
+    cursor: grab; /* Indicate draggable */
+    -webkit-user-select: none; /* Disable text selection on WebKit browsers */
+    -moz-user-select: none; /* Disable text selection on Firefox */
+    -ms-user-select: none; /* Disable text selection on Internet Explorer/Edge */
+    user-select: none; /* Disable text selection on other browsers */
+}
+
+/* Change cursor to 'grabbing' when dragging */
+.anime-scroll.active .anime-card {
+    cursor: grabbing;
 }
 
 .anime-cover {
@@ -16,6 +63,24 @@
     height: 225px;
     object-fit: cover;
     margin-bottom: 10px;
+    -webkit-user-select: none; /* Disable text selection on WebKit browsers */
+    -moz-user-select: none; /* Disable text selection on Firefox */
+    -ms-user-select: none; /* Disable text selection on Internet Explorer/Edge */
+    user-select: none; /* Disable text selection on other browsers */
+}
+
+/* Horizontal scrollbar styling (optional) */
+.anime-scroll::-webkit-scrollbar {
+    height: 10px;
+}
+
+.anime-scroll::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.anime-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 /* Modal styling */

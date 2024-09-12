@@ -1,0 +1,82 @@
+/* Styles for anime-details.html */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.anime-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.anime-cover {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 8px;
+}
+
+.anime-title {
+    font-size: 2em;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.anime-info {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.anime-info p {
+    margin: 10px 0;
+}
+
+.anime-description {
+    margin-top: 20px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+footer p {
+    margin: 0;
+}

@@ -8,4 +8,5 @@ import com.watchmoreanime.domain.Anime;
 
 public interface AnimeRepository extends JpaRepository<Anime, Long> {
 	List<Anime> findByGenre(String genre);
+	Anime getAnimeById(Long id);
 }
