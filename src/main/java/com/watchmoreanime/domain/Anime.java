@@ -2,22 +2,41 @@ package com.watchmoreanime.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "anime")
 public class Anime {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
 	private Long id;
 
 	@Column(nullable = false)
 	private String title;
 
-	@Column(nullable = false)
-	private String genre;
+	@ElementCollection
+	@CollectionTable(
+			name = "anime_genres",
+			joinColumns = @JoinColumn(name = "anime_id")
+	)
+	@Column(name = "genre")
+	private List<String> genres;
 
 	@Column(nullable = false)
 	private int episodeCount;
+
+	@Column(nullable = false)
+	private String coverImage;
+
+	@Column(nullable = false)
+	private String description;
+
+	@Column(nullable = false)
+	private int averageScore;
+
+	@Column(nullable = false)
+	private int popularity;
 
 	@Column(nullable = false)
 	private String releaseDate;
@@ -39,12 +58,12 @@ public class Anime {
 		this.title = title;
 	}
 
-	public String getGenre() {
-		return genre;
+	public List<String> getGenres() {
+		return genres;
 	}
 
-	public void setGenre(String genre) {
-		this.genre = genre;
+	public void setGenres(List<String> genres) {
+		this.genres = genres;
 	}
 
 	public int getEpisodeCount() {
@@ -61,5 +80,37 @@ public class Anime {
 
 	public void setReleaseDate(String releaseDate) {
 		this.releaseDate = releaseDate;
+	}
+
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getAverageScore() {
+		return averageScore;
+	}
+
+	public void setAverageScore(int averageScore) {
+		this.averageScore = averageScore;
+	}
+
+	public int getPopularity() {
+		return popularity;
+	}
+
+	public void setPopularity(int popularity) {
+		this.popularity = popularity;
 	}
 }

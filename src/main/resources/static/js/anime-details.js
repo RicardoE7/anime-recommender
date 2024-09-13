@@ -3,42 +3,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const animeId = urlParams.get('id');
 
     if (animeId) {
-        const query = `
-        {
-            Media(id: ${animeId}) {
-                title {
-                    romaji
-                    english
-                }
-                episodes
-                genres
-                coverImage {
-                    large
-                }
-                description
-                averageScore
-            }
-        }`;
-
         const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            },
-            body: JSON.stringify({ query })
+            }
         };
 
         try {
-            const response = await fetch('https://graphql.anilist.co/', options);
-            const data = await response.json();
-            const anime = data.data.Media;
+            // Replace the URL with your backend API endpoint
+            const response = await fetch(`/anime-details/${animeId}`, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-            // Populate the page with anime details
-            document.getElementById('anime-title').textContent = anime.title.english || anime.title.romaji;
-            document.getElementById('anime-cover').src = anime.coverImage.large;
+            const anime = await response.json();
+
+            // Populate the page with anime details from your backend
+            document.getElementById('anime-title').textContent = anime.title;
+            document.getElementById('anime-cover').src = anime.coverImage;
             document.getElementById('anime-description').textContent = anime.description.replace(/<br\s*\/?>/gi, '\n') || 'No description available';
-            document.getElementById('anime-episodes').textContent = `Episodes: ${anime.episodes}`;
+            document.getElementById('anime-episodes').textContent = `Episodes: ${anime.episodeCount}`;
             document.getElementById('anime-genres').textContent = `Genres: ${anime.genres.join(', ')}`;
             document.getElementById('anime-score').textContent = `Score: ${anime.averageScore}`;
         } catch (error) {
@@ -46,3 +32,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
