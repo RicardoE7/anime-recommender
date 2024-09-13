@@ -29,7 +29,7 @@ public class Anime {
 	@Column(nullable = false)
 	private String coverImage;
 
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition="LONGTEXT")
 	private String description;
 
 	@Column(nullable = false)

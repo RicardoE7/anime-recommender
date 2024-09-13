@@ -4,33 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Details</title>
-    <link rel="stylesheet" href="/src/main/resources/static/css/anime-details.css">
-    <script defer src="/src/main/resources/static/js/anime-details.js"></script>
+    <link rel="stylesheet" href="/css/anime-details.css">
 </head>
 <body>
-<header>
-    <h1>Anime Details</h1>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="profile.html">Profile</a>
-        <a href="logout.html">Logout</a>
-    </nav>
-</header>
-
-<main>
-    <section id="anime-details">
-        <h2 id="anime-title">Anime Title</h2>
-        <img id="anime-cover" src="" alt="Anime Cover">
-        <p id="anime-description">Description of the anime.</p>
-        <p id="anime-episodes">Episodes: </p>
-        <p id="anime-genres">Genres: </p>
-        <p id="anime-score">Score: </p>
-    </section>
-</main>
-
-<footer>
-    <p>&copy; 2024 Anime Recommender. All rights reserved.</p>
-</footer>
-
+    <div class="anime-details">
+        <div class="cover-image">
+            <img src="" alt="Cover Image" id="coverImage">
+        </div>
+        <div class="anime-info">
+            <h1 id="title"></h1>
+            <p><strong>Genres:</strong> <span id="genres"></span></p>
+            <p><strong>Episodes:</strong> <span id="episodeCount"></span></p>
+            <p><strong>Description:</strong> <span id="description"></span></p>
+            <p><strong>Average Score:</strong> <span id="averageScore"></span></p>
+            <p><strong>Popularity:</strong> <span id="popularity"></span></p>
+            <p><strong>Release Date:</strong> <span id="releaseDate"></span></p>
+        </div>
+        <button id="backButton">Back to Recommendations</button>
+    </div>
+    <script src="/js/anime-details.js"></script>
 </body>
 </html>

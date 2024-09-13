@@ -5,6 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchmoreanime.domain.Anime;
 import com.watchmoreanime.repository.AnimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -27,16 +32,18 @@ public class AnimeService {
 
     // Fetch Anime from AniList API by Anime ID
     public Anime fetchAnimeFromApi(Long animeId) {
+        // Correct GraphQL query format with variable $id
         String query = """
-        {
-            Media(id: %d, type: ANIME) {
+        query ($id: Int) {
+            Media(id: $id, type: ANIME) {
                 id
                 title {
                     romaji
                     english
+                    native
                 }
-                episodes
                 genres
+                episodes
                 coverImage {
                     large
                 }
@@ -50,16 +57,29 @@ public class AnimeService {
                 }
             }
         }
-        """.formatted(animeId);
+        """;
 
         RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Create the request to AniList API
-        String jsonRequest = String.format("{\"query\":\"%s\"}", query);
-        String response = restTemplate.postForObject(apiUrl, jsonRequest, String.class);
+        // Escape special characters in the query string for JSON
+        String formattedQuery = query.replace("\n", "\\n").replace("\r", "\\r").replace("\"", "\\\"");
+        String jsonRequest = String.format("{\"query\":\"%s\",\"variables\":{\"id\":%d}}", formattedQuery, animeId);
+        HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
 
-        // Parse the response into an Anime object
-        return parseApiResponse(response);
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, request, String.class);
+            String response = responseEntity.getBody();
+
+            // Parse the response into an Anime object
+            return parseApiResponse(response);
+
+        } catch (Exception e) {
+            System.err.println("Error during API call: " + e.getMessage());
+            e.printStackTrace();
+            return null; // Handle the error appropriately
+        }
     }
 
     // Saving anime to the database with genres directly as strings
@@ -78,59 +98,60 @@ public class AnimeService {
         Anime anime = new Anime();
 
         try {
-            JsonNode root = mapper.readTree(response).get("data").get("Media");
+            JsonNode root = mapper.readTree(response).path("data").path("Media");
 
             // Set anime ID
-            anime.setId(root.get("id").asLong());
+            anime.setId(root.path("id").asLong());
 
             // Set anime title (use English if available, otherwise Romaji)
-            JsonNode titleNode = root.get("title");
-            if (titleNode.has("english") && !titleNode.get("english").isNull()) {
-                anime.setTitle(titleNode.get("english").asText());
+            JsonNode titleNode = root.path("title");
+            if (titleNode.has("english") && !titleNode.path("english").isMissingNode()) {
+                anime.setTitle(titleNode.path("english").asText());
             } else {
-                anime.setTitle(titleNode.get("romaji").asText());
+                anime.setTitle(titleNode.path("romaji").asText());
             }
 
             // Set genres as a list of strings
             List<String> genres = new ArrayList<>();
-            JsonNode genresNode = root.get("genres");
-            for (JsonNode genreNode : genresNode) {
-                genres.add(genreNode.asText());
+            JsonNode genresNode = root.path("genres");
+            if (genresNode.isArray()) {
+                for (JsonNode genreNode : genresNode) {
+                    genres.add(genreNode.asText());
+                }
             }
             anime.setGenres(genres);
 
             // Set episode count
-            anime.setEpisodeCount(root.get("episodes").asInt());
+            anime.setEpisodeCount(root.path("episodes").asInt());
 
             // Set cover image URL
-            anime.setCoverImage(root.get("coverImage").get("large").asText());
+            anime.setCoverImage(root.path("coverImage").path("large").asText());
 
             // Set description
-            anime.setDescription(root.get("description").asText());
+            anime.setDescription(root.path("description").asText());
 
             // Set average score
-            anime.setAverageScore(root.get("averageScore").asInt());
+            anime.setAverageScore(root.path("averageScore").asInt());
 
             // Set popularity
-            anime.setPopularity(root.get("popularity").asInt());
+            anime.setPopularity(root.path("popularity").asInt());
 
             // Set release date (format: "YYYY-MM-DD")
-            JsonNode startDate = root.get("startDate");
+            JsonNode startDate = root.path("startDate");
             String releaseDate = String.format("%d-%02d-%02d",
-                    startDate.get("year").asInt(),
-                    startDate.get("month").asInt(),
-                    startDate.get("day").asInt());
+                    startDate.path("year").asInt(),
+                    startDate.path("month").asInt(),
+                    startDate.path("day").asInt());
             anime.setReleaseDate(releaseDate);
 
         } catch (Exception e) {
+            System.err.println("Error parsing API response: " + e.getMessage());
             e.printStackTrace();
         }
 
         return anime;
     }
-
 }
-
 
 
 

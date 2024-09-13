@@ -104,13 +104,13 @@ async function fetchAnimeById(animeId) {
             }
             genres
             episodes
-            coverImage{
+            coverImage {
                 large
             }
             description
             averageScore
             popularity
-            startDate{
+            startDate {
                 year
                 month
                 day
@@ -148,6 +148,28 @@ async function fetchAnimeById(animeId) {
     }
 }
 
+// Save anime to the database if it doesn't already exist
+async function saveAnimeIfNotExists(anime) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(anime)
+    };
+
+    try {
+        const response = await fetch('/anime-details/{animeId}', options);
+        if (response.ok) {
+            console.log('Anime saved successfully.');
+        } else {
+            console.error('Error saving anime:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error during save request:', error);
+    }
+}
+
 // Display anime list in the specified container
 function displayAnime(animeList, containerId) {
     const animeListDiv = document.getElementById(containerId);
@@ -160,7 +182,7 @@ function displayAnime(animeList, containerId) {
 
     animeList.forEach(anime => {
         // Check if required fields exist
-        if (!anime.title || !anime.title.english && !anime.title.romaji) {
+        if (!anime.title || (!anime.title.english && !anime.title.romaji)) {
             console.warn('Anime data missing title:', anime);
             return;
         }
@@ -200,7 +222,8 @@ function displayAnime(animeList, containerId) {
             console.log('More Info clicked, animeId:', animeId); // Log the clicked anime ID
             const anime = await fetchAnimeById(animeId);
             if (anime) {
-                window.location.href = `/anime-details/${animeId}`;
+                await saveAnimeIfNotExists(anime); // Save the anime if not exists
+                window.location.href = `/anime-details/${animeId}`; // Redirect to anime details page
             }
         });
     });
@@ -272,3 +295,4 @@ fetchHighestRatedAnime();
 // Enable drag scrolling for anime lists
 enableDragScrolling(document.getElementById('anime-list'));
 enableDragScrolling(document.getElementById('highest-rated-list'));
+
