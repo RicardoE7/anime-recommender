@@ -1,47 +1,76 @@
-body {
-    font-family: Arial, sans-serif;
+/* Container for the card */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
 }
 
-.anime-details {
-    max-width: 800px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* Style for the anime card */
+.anime-card {
+    width: 90%;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.cover-image img {
+/* Header section with cover image */
+.anime-card-header {
+    position: relative;
+    text-align: center;
+}
+
+.anime-cover {
     width: 100%;
-    max-width: 300px;
-    border-radius: 8px;
+    height: auto;
+    object-fit: cover;
 }
 
-.anime-info {
-    margin-top: 20px;
-}
-
-.anime-info h1 {
+.anime-card-header h1 {
     margin: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
-.anime-info p {
+/* Body section for details */
+.anime-card-body {
+    padding: 20px;
+}
+
+.anime-card-body p {
     margin: 10px 0;
 }
 
-button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
+.anime-card-body strong {
+    font-weight: bold;
 }
 
-button:hover {
+/* Footer section with back button */
+.anime-card-footer {
+    padding: 20px;
+    text-align: center;
+    background: #f1f1f1;
+}
+
+#backButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+#backButton:hover {
     background-color: #0056b3;
 }
+

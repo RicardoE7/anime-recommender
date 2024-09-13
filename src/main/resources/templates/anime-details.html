@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Details</title>
+    <title th:text="${anime.title}">Anime Details</title>
     <link rel="stylesheet" href="/css/anime-details.css">
 </head>
 <body>
-    <div class="anime-details">
-        <div class="cover-image">
-            <img src="" alt="Cover Image" id="coverImage">
+    <div class="container">
+        <div class="anime-card">
+            <div class="anime-card-header">
+                <img th:src="${anime.coverImage}" alt="Cover Image" class="anime-cover">
+                <h1 th:text="${anime.title}">Anime Title</h1>
+            </div>
+            <div class="anime-card-body">
+                <p><strong>Genres:</strong> <span th:text="${anime.genres}">Genres</span></p>
+                <p><strong>Episode Count:</strong> <span th:text="${anime.episodeCount}">Episode Count</span></p>
+                <p><strong>Description:</strong></p>
+                <p th:utext="${anime.description}">Description</p>
+                <p><strong>Average Score:</strong> <span th:text="${anime.averageScore}">Average Score</span></p>
+                <p><strong>Popularity:</strong> <span th:text="${anime.popularity}">Popularity</span></p>
+                <p><strong>Release Date:</strong> <span th:text="${anime.releaseDate}">Release Date</span></p>
+            </div>
+            <div class="anime-card-footer">
+                <a href="/recommendations" id="backButton">Back to Recommendations</a>
+            </div>
         </div>
-        <div class="anime-info">
-            <h1 id="title"></h1>
-            <p><strong>Genres:</strong> <span id="genres"></span></p>
-            <p><strong>Episodes:</strong> <span id="episodeCount"></span></p>
-            <p><strong>Description:</strong> <span id="description"></span></p>
-            <p><strong>Average Score:</strong> <span id="averageScore"></span></p>
-            <p><strong>Popularity:</strong> <span id="popularity"></span></p>
-            <p><strong>Release Date:</strong> <span id="releaseDate"></span></p>
-        </div>
-        <button id="backButton">Back to Recommendations</button>
     </div>
-    <script src="/js/anime-details.js"></script>
 </body>
 </html>
