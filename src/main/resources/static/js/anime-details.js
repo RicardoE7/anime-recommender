@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     document.getElementById('backButton').addEventListener('click', () => {
-        window.location.href = '/recommendations'; // Replace with the actual URL for your recommendations page
+        window.location.href = '/recommended'; // Replace with the actual URL for your recommendations page
     });
 });
 

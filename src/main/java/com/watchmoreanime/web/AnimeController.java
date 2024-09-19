@@ -53,6 +53,21 @@ public class AnimeController {
         model.addAttribute("animes", animes);
         return "anime-genre"; // Return the name of your HTML template
     }
+    
+    @GetMapping("/anime-range")
+    public String fetchAnimeByScoreRange(
+        @RequestParam("averageScoreGreater") int averageScoreGreater,
+        @RequestParam("averageScoreLesser") int averageScoreLesser,
+        Model model) {
+        
+        // Fetch anime from an external source and save to the database if needed
+        List<Anime> fetchedAnime = animeService.fetchAndSaveAnimeByScoreRange(averageScoreGreater, averageScoreLesser);
+        
+     // Add the fetched anime to the model
+        model.addAttribute("animes", fetchedAnime);
+        
+        return "anime-by-range";
+    }
 }
 
 

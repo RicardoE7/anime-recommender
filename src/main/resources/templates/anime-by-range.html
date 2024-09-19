@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetched Anime</title>
+    <link rel="stylesheet" href="/css/anime-by-range.css"> <!-- Reuse or create new CSS -->
+</head>
+<body>
+     <h1>Fetched Anime</h1>
+
+    <div class="anime-list">
+        <div th:each="anime : ${animes}" class="anime-card">
+            <img th:src="${anime.coverImage}" alt="Cover Image" class="anime-cover">
+            <h2 th:text="${anime.title}">Anime Title</h2>
+            <p><strong>Genres:</strong> <span th:text="${anime.genres}">Genres</span></p>
+            <p><strong>Episode Count:</strong> <span th:text="${anime.episodeCount}">Episode Count</span></p>
+            <p><strong>Description:</strong></p>
+            <p class="description" th:utext="${anime.description}">Description</p>
+            <p><strong>Average Score:</strong> <span th:text="${anime.averageScore}">Average Score</span></p>
+            <p><strong>Popularity:</strong> <span th:text="${anime.popularity}">Popularity</span></p>
+            <p><strong>Release Date:</strong> <span th:text="${anime.releaseDate}">Release Date</span></p>
+        </div>
+    </div>
+
+    <a href="/recommended" id="backButton">Back to Recommendations</a>
+</body>
+</html>
