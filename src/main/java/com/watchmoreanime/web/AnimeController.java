@@ -1,20 +1,29 @@
 package com.watchmoreanime.web;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.watchmoreanime.domain.Anime;
 import com.watchmoreanime.repository.AnimeRepository;
 import com.watchmoreanime.service.AnimeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.watchmoreanime.service.AnimeUpdateScheduler;
 
 @Controller
 public class AnimeController {
 
     @Autowired
     private AnimeRepository animeRepository;
+    
+    @Autowired
+    private AnimeUpdateScheduler animeScheduler;
 
     @Autowired
     private AnimeService animeService;
@@ -67,6 +76,12 @@ public class AnimeController {
         model.addAttribute("animes", fetchedAnime);
         
         return "anime-by-range";
+    }
+    
+    @PostMapping("/test-scheduler")
+    public ResponseEntity<String> fetchAnimeData() {
+        animeScheduler.updateAnimeData();
+        return ResponseEntity.ok("Anime data fetch initiated.");
     }
 }
 
