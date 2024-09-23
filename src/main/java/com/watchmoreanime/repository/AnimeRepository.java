@@ -13,10 +13,11 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
 
 	Anime getAnimeById(Long id);
 	
-	@Query("SELECT a FROM Anime a WHERE a.averageScore > :averageScoreGreater AND a.averageScore <= :averageScoreLesser")
+	@Query("SELECT a FROM Anime a WHERE a.averageScore >= :averageScoreGreater AND a.averageScore <= :averageScoreLesser")
 	List<Anime> findByAverageScoreBetween(@Param("averageScoreGreater") int averageScoreGreater, @Param("averageScoreLesser") int averageScoreLesser);
 	
 	// Custom query to retrieve only the IDs of all anime
     @Query("SELECT a.id FROM Anime a")
     List<Long> findAllAnimeIds();
+    
 }

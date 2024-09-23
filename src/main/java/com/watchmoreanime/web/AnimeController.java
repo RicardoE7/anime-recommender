@@ -70,8 +70,8 @@ public class AnimeController {
         Model model) {
         
         // Fetch anime from an external source and save to the database if needed
-        List<Anime> fetchedAnime = animeService.fetchAndSaveAnimeByScoreRange(averageScoreGreater, averageScoreLesser);
-        
+        List<Anime> fetchedAnime = animeService.findByAverageScoreBetween(averageScoreGreater, averageScoreLesser);
+        System.out.println(" From Controller -> Lower Bound: " + averageScoreGreater + ", Upper Bound: " + averageScoreLesser);
      // Add the fetched anime to the model
         model.addAttribute("animes", fetchedAnime);
         
