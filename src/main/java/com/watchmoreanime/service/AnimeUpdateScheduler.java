@@ -4,18 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Semaphore;
-
 @Component
 public class AnimeUpdateScheduler {
 
     @Autowired
     private AnimeService animeService;
-
-    private final Semaphore semaphore = new Semaphore(5); // Limit concurrent tasks to 5
 
     // This method runs daily at 2 AM
     @Scheduled(cron = "0 0 2 * * ?")
@@ -24,45 +17,19 @@ public class AnimeUpdateScheduler {
         long startTime = System.currentTimeMillis();
 
         int rangeStep = 2; // The step size to increment by
-        List<CompletableFuture<Void>> futures = new ArrayList<>(); // A list to store async tasks
-
-        // Using arrays to hold mutable state
-        int[] greater = {0}; // Mutable integer array to hold the 'greater' value
-        int[] lesser = {2};  // Mutable integer array to hold the 'lesser' value
+        int greater = 0;   // Initial 'greater' value
+        int lesser = 2;    // Initial 'lesser' value
 
         // Loop through the range until 'lesser' exceeds 100
-        while (lesser[0] <= 100) {
-            // Capture the current values for use in the CompletableFuture
-            int currentGreater = greater[0];
-            int currentLesser = lesser[0];
+        while (lesser <= 100) {
+            // Fetch and save anime synchronously
+            animeService.fetchAndSaveAnimeByScoreRange(greater, lesser);
+            System.out.println("Fetched and saved anime for score range: " + greater + "-" + lesser);
 
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                try {
-                    // Acquire a permit before proceeding
-                    semaphore.acquire();
-
-                    // Fetch and save the anime for the given range
-                    animeService.fetchAndSaveAnimeByScoreRange(currentGreater, currentLesser);
-                    System.out.println("Fetched and saved anime for score range: " + currentGreater + "-" + currentLesser);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    System.err.println("Thread was interrupted during semaphore acquisition");
-                } finally {
-                    // Release the semaphore permit after task completion
-                    semaphore.release();
-                }
-            });
-
-            futures.add(future); // Add the future to the list
-
-            // Update the mutable state for the next iteration
-            greater[0] += rangeStep;
-            lesser[0] += rangeStep;
+            // Update the range for the next iteration
+            greater += rangeStep;
+            lesser += rangeStep;
         }
-
-        // Wait for all async tasks to complete
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        allOf.join(); // Wait for all the tasks to complete
 
         // Record end time
         long endTime = System.currentTimeMillis();
@@ -79,25 +46,12 @@ public class AnimeUpdateScheduler {
         int greater = 79;
         int lesser = 81;
 
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            try {
-                // Acquire semaphore before running the task
-                semaphore.acquire();
-                
-                animeService.fetchAndSaveAnimeByScoreRange(greater, lesser); // Fetch and save for this specific range
-                System.out.println("Fetched Dragon Ball related anime for score range: " + greater + "-" + lesser);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.err.println("Thread was interrupted during semaphore acquisition");
-            } finally {
-                // Release the semaphore after the task is complete
-                semaphore.release();
-            }
-        });
-
-        future.join(); // Wait for the async task to complete
+        // Fetch and save synchronously for this specific range
+        animeService.fetchAndSaveAnimeByScoreRange(greater, lesser);
+        System.out.println("Fetched Dragon Ball related anime for score range: " + greater + "-" + lesser);
     }
 }
+
 
 
 

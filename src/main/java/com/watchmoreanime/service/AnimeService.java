@@ -301,6 +301,7 @@ public class AnimeService {
 	                            	updateAnimeFields(existingAnime, anime);
 		                            animeRepository.save(existingAnime);
 		                            System.out.println("Updated anime with ID: " + anime.getId());
+		                            System.out.println("API Response for Score Range (" + averageScoreGreater + "-" + averageScoreLesser + ")");
 	                            }
 	                            
 	                        } else {
