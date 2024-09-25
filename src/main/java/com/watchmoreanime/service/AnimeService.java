@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -138,173 +139,218 @@ public class AnimeService {
 	}
 
 	private Anime parseSingleMedia(JsonNode mediaNode) {
-		Anime anime = new Anime();
+	    Anime anime = new Anime();
+	    long animeId = mediaNode.path("id").asLong();
+	    
+	    Optional<Anime> existingAnimeOpt = animeRepository.findById(animeId);
+	    if (existingAnimeOpt.isPresent()) {
+	        Anime existingAnime = existingAnimeOpt.get();
 
-		try {
-			anime.setId(mediaNode.path("id").asLong());
+	        // Compare relevant fields
+	        if (existingAnime.getEpisodeCount() == mediaNode.path("episodes").asInt() &&
+	            (existingAnime.getTitle().equals(mediaNode.path("title").path("english").asText()) ||
+	            existingAnime.getTitle().equals(mediaNode.path("title").path("romaji").asText()) ||
+	            existingAnime.getTitle().equals(mediaNode.path("title").path("native").asText())) &&
+	            existingAnime.getPopularity() == mediaNode.path("popularity").asInt() &&
+	            existingAnime.getCoverImage().equals(mediaNode.path("coverImage").path("large").asText()) &&
+	            existingAnime.getAverageScore() == mediaNode.path("averageScore").asInt()) {
+	            
+	            // Return the existing anime if no fields have changed
+	            return existingAnime;
+	        }
+	    }
 
-			JsonNode titleNode = mediaNode.path("title");
-			if (titleNode.has("english") && !titleNode.path("english").isMissingNode()) {
-				anime.setTitle(titleNode.path("english").asText());
-			} else {
-				anime.setTitle(titleNode.path("romaji").asText());
-			}
+	    // Parsing new or updated anime data
+	    try {
+	        anime.setId(animeId);
 
-			List<String> genres = new ArrayList<>();
-			JsonNode genresNode = mediaNode.path("genres");
-			if (genresNode.isArray()) {
-				for (JsonNode genreNode : genresNode) {
-					genres.add(genreNode.asText());
-				}
-			}
-			anime.setGenres(genres);
-			anime.setEpisodeCount(mediaNode.path("episodes").asInt());
-			anime.setCoverImage(mediaNode.path("coverImage").path("large").asText());
+	        JsonNode titleNode = mediaNode.path("title");
+	        String title = titleNode.path("english").asText();
+	        if (!"null".equals(title)) {
+	            anime.setTitle(title);
+	        } else if (!"null".equals(titleNode.path("romaji").asText())) {
+	            anime.setTitle(titleNode.path("romaji").asText());
+	        } else if (!"null".equals(titleNode.path("native").asText())) {
+	            anime.setTitle(titleNode.path("native").asText());
+	        } else {
+	            anime.setTitle("Unknown Title");
+	        }
 
-			// Use Jsoup to clean the description
-			String rawDescription = mediaNode.path("description").asText();
-			String cleanDescription = Jsoup.parse(rawDescription).text();
-			anime.setDescription(cleanDescription);
+	        List<String> genres = new ArrayList<>();
+	        JsonNode genresNode = mediaNode.path("genres");
+	        if (genresNode.isArray()) {
+	            for (JsonNode genreNode : genresNode) {
+	                genres.add(genreNode.asText());
+	            }
+	        }
+	        anime.setGenres(genres);
+	        anime.setEpisodeCount(mediaNode.path("episodes").asInt());
+	        anime.setCoverImage(mediaNode.path("coverImage").path("large").asText());
 
-			anime.setAverageScore(mediaNode.path("averageScore").asInt());
-			anime.setPopularity(mediaNode.path("popularity").asInt());
+	        // Clean description using Jsoup
+	        String rawDescription = mediaNode.path("description").asText();
+	        anime.setDescription(Jsoup.parse(rawDescription).text());
 
-			JsonNode startDate = mediaNode.path("startDate");
-			String releaseDate = String.format("%d-%02d-%02d", startDate.path("year").asInt(),
-					startDate.path("month").asInt(), startDate.path("day").asInt());
-			anime.setReleaseDate(releaseDate);
+	        anime.setAverageScore(mediaNode.path("averageScore").asInt());
+	        anime.setPopularity(mediaNode.path("popularity").asInt());
 
-			// Set the updatedAt field
-			long updatedAtTimestamp = mediaNode.path("updatedAt").asLong();
-			anime.setUpdatedAt(LocalDateTime.ofEpochSecond(updatedAtTimestamp, 0, ZoneOffset.UTC));
+	        JsonNode startDate = mediaNode.path("startDate");
+	        String releaseDate = String.format("%d-%02d-%02d", startDate.path("year").asInt(),
+	            startDate.path("month").asInt(), startDate.path("day").asInt());
+	        anime.setReleaseDate(releaseDate);
 
-			System.out.println("API updatedAt: " + LocalDateTime.ofEpochSecond(updatedAtTimestamp, 0, ZoneOffset.UTC));
-			System.out.println("Parsed Anime: " + anime);
+	        // Set the updatedAt field
+	        long updatedAtTimestamp = mediaNode.path("updatedAt").asLong();
+	        anime.setUpdatedAt(LocalDateTime.ofEpochSecond(updatedAtTimestamp, 0, ZoneOffset.UTC));
 
-		} catch (Exception e) {
-			System.err.println("Error parsing single media: " + e.getMessage());
-			e.printStackTrace();
-		}
+	        System.out.println("Parsed Anime: " + anime);
 
-		return anime;
+	    } catch (Exception e) {
+	        System.err.println("Error parsing single media: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return anime;
 	}
+
+
 
 	// Fetch Anime by score range from the AniList API and save to the database if
 	// not present
 	// Fetch Anime by score range from the AniList API with pagination and save to
 	// the database if not present
 	public List<Anime> fetchAndSaveAnimeByScoreRange(int averageScoreGreater, int averageScoreLesser) {
-		String query = """
-				query ($averageScore_greater: Int, $averageScore_lesser: Int, $page: Int) {
-				    Page(page: $page, perPage: 50) {
-				        media(type: ANIME, averageScore_greater: $averageScore_greater, averageScore_lesser: $averageScore_lesser, sort: SCORE_DESC) {
-				            id
-				            title {
-				                romaji
-				                english
-				                native
-				            }
-				            genres
-				            episodes
-				            coverImage {
-				                large
-				            }
-				            description
-				            averageScore
-				            popularity
-				            startDate {
-				                year
-				                month
-				                day
-				            }
-				            updatedAt
-				        }
-				        pageInfo {
-				            currentPage
-				            lastPage
-				            hasNextPage
-				        }
-				    }
-				}
-				""";
+	    String query = """
+	            query ($averageScore_greater: Int, $averageScore_lesser: Int, $page: Int) {
+	                Page(page: $page, perPage: 50) {
+	                    media(type: ANIME, averageScore_greater: $averageScore_greater, averageScore_lesser: $averageScore_lesser, sort: SCORE_DESC, isAdult: false) {
+	                        id
+	                        title {
+	                            romaji
+	                            english
+	                            native
+	                        }
+	                        genres
+	                        episodes
+	                        coverImage {
+	                            large
+	                        }
+	                        description
+	                        averageScore
+	                        popularity
+	                        startDate {
+	                            year
+	                            month
+	                            day
+	                        }
+	                        updatedAt
+	                    }
+	                    pageInfo {
+	                        currentPage
+	                        lastPage
+	                        hasNextPage
+	                    }
+	                }
+	            }
+	            """;
 
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
 
-		int currentPage = 1;
-		List<Anime> allAnime = new ArrayList<>();
-		ObjectMapper mapper = new ObjectMapper();
+	    int currentPage = 1;
+	    List<Anime> allAnime = new ArrayList<>();
+	    ObjectMapper mapper = new ObjectMapper();
 
-		try {
-			boolean hasNextPage = true;
-			int retryCount = 0;
-			final int maxRetries = 5;
+	    try {
+	        boolean hasNextPage = true;
+	        int retryCount = 0;
+	        final int maxRetries = 5;
 
-			while (hasNextPage) {
-				String formattedQuery = query.replace("\n", "\\n").replace("\r", "\\r").replace("\"", "\\\"");
-				String jsonRequest = String.format(
-						"{\"query\":\"%s\",\"variables\":{\"averageScore_greater\":%d,\"averageScore_lesser\":%d,\"page\":%d}}",
-						formattedQuery, averageScoreGreater, averageScoreLesser, currentPage);
-				HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
+	        while (hasNextPage) {
+	            String formattedQuery = query.replace("\n", "\\n").replace("\r", "\\r").replace("\"", "\\\"");
+	            String jsonRequest = String.format(
+	                    "{\"query\":\"%s\",\"variables\":{\"averageScore_greater\":%d,\"averageScore_lesser\":%d,\"page\":%d}}",
+	                    formattedQuery, averageScoreGreater, averageScoreLesser, currentPage);
+	            HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
 
-				try {
-					ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, request,
-							String.class);
-					String response = responseEntity.getBody();
-					System.out.println("API Response for Score Range (" + averageScoreGreater + "-" + averageScoreLesser
-							+ ") Page " + currentPage + ": " + response);
+	            try {
+	                ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, request, String.class);
+	                String response = responseEntity.getBody();
+	                System.out.println("API Response for Score Range (" + averageScoreGreater + "-" + averageScoreLesser + ") Page " + currentPage + ": " + response);
 
-					List<Anime> animeList = parseApiResponse(response);
-					allAnime.addAll(animeList);
+	                List<Anime> animeList = parseApiResponse(response);
+	                allAnime.addAll(animeList);
 
-					// Save each anime if it's not already in the database
-					for (Anime anime : animeList) {
-						if (anime != null && !animeRepository.existsById(anime.getId())) {
-							saveAnimeWithGenres(anime, anime.getGenres());
-						}
-					}
+	                // Save or update each anime
+	                for (Anime anime : animeList) {
+	                    if (anime != null) {
+	                        Optional<Anime> existingAnimeOpt = animeRepository.findById(anime.getId());
 
-					// Parse page info to check for next page
-					JsonNode root = mapper.readTree(response);
-					JsonNode pageInfo = root.path("data").path("Page").path("pageInfo");
+	                        if (existingAnimeOpt.isPresent()) {
+	                            // Update existing anime
+	                            Anime existingAnime = existingAnimeOpt.get();
+	                            if(existingAnime.getEpisodeCount() != anime.getEpisodeCount() ||
+	                            		existingAnime.getTitle() != anime.getTitle() ||
+	                            		existingAnime.getPopularity() != anime.getPopularity() ||
+	                            		existingAnime.getCoverImage() != anime.getCoverImage() ||
+	                            		existingAnime.getAverageScore() != anime.getAverageScore() ||
+	                            		existingAnime.getGenres() != anime.getGenres() ||
+	                            		existingAnime.getDescription() != anime.getDescription()
+	                            		) {
+	                            	updateAnimeFields(existingAnime, anime);
+		                            animeRepository.save(existingAnime);
+		                            System.out.println("Updated anime with ID: " + anime.getId());
+	                            }
+	                            
+	                        } else {
+	                            // Save new anime
+	                            saveAnimeWithGenres(anime, anime.getGenres());
+	                            System.out.println("Saved new anime with ID: " + anime.getId());
+	                        }
+	                    }
+	                }
 
-					hasNextPage = pageInfo.path("hasNextPage").asBoolean();
-					currentPage = pageInfo.path("currentPage").asInt() + 1;
+	                // Parse page info to check for the next page
+	                JsonNode root = mapper.readTree(response);
+	                JsonNode pageInfo = root.path("data").path("Page").path("pageInfo");
 
-					// Reset retry count on successful response
-					retryCount = 0;
+	                hasNextPage = pageInfo.path("hasNextPage").asBoolean();
+	                currentPage = pageInfo.path("currentPage").asInt() + 1;
 
-				} catch (Exception e) {
-					if (e.getMessage().contains("429")) {
-						// Handle rate limit error
-						System.err.println(
-								"Rate limit exceeded. Retrying in " + (Math.pow(2, retryCount) * 10) + " seconds...");
-						TimeUnit.SECONDS.sleep((long) Math.pow(2, retryCount) * 10);
-						retryCount++;
-						if (retryCount > maxRetries) {
-							throw new RuntimeException("Max retries reached. Unable to fetch data.", e);
-						}
-					} else {
-						// Handle other errors
-						System.err.println("Error fetching data: " + e.getMessage());
-						throw e;
-					}
-				}
+	                // Reset retry count on successful response
+	                retryCount = 0;
 
-				// Delay to respect the rate limit (approximately 0.67 seconds between requests)
-				TimeUnit.SECONDS.sleep(60 / 90);
-			}
+	            } catch (Exception e) {
+	                if (e.getMessage().contains("429")) {
+	                    // Handle rate limit error
+	                    System.err.println("Rate limit exceeded. Retrying in " + (Math.pow(2, retryCount) * 10) + " seconds...");
+	                    TimeUnit.SECONDS.sleep((long) Math.pow(2, retryCount) * 10);
+	                    retryCount++;
+	                    if (retryCount > maxRetries) {
+	                        throw new RuntimeException("Max retries reached. Unable to fetch data.", e);
+	                    }
+	                } else {
+	                    // Handle other errors
+	                    System.err.println("Error fetching data: " + e.getMessage());
+	                    throw e;
+	                }
+	            }
 
-			System.out.println("Fetched and Saved All Anime by Score Range: " + allAnime);
-			return allAnime;
+	            // Delay to respect the rate limit (approximately 0.67 seconds between requests)
+	            TimeUnit.MILLISECONDS.sleep(750);
+	        }
 
-		} catch (Exception e) {
-			System.err.println("Error fetching and saving anime by score range: " + e.getMessage());
-			e.printStackTrace();
-			return new ArrayList<>();
-		}
+	        System.out.println("Fetched and Saved All Anime by Score Range: " + allAnime.size());
+	        return allAnime;
+
+	    } catch (Exception e) {
+	        System.err.println("Error fetching and saving anime by score range: " + e.getMessage());
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
 	}
+
 
 	@Transactional
 	public void updateAnimeData() {
@@ -513,7 +559,20 @@ public class AnimeService {
 	
 	public List<Anime> findByAverageScoreBetween(int averageScoreGreater, int averageScoreLesser){
 		System.out.println("Lower Bound: " + averageScoreGreater + ", Upper Bound: " + averageScoreLesser);
-		return animeRepository.findByAverageScoreBetween(averageScoreGreater, averageScoreGreater);
+		return animeRepository.findByAverageScoreBetween(averageScoreGreater, averageScoreLesser);
 	}
+	
+	private void updateAnimeFields(Anime existingAnime, Anime newAnime) {
+	    existingAnime.setTitle(newAnime.getTitle());
+	    existingAnime.setGenres(newAnime.getGenres());
+	    existingAnime.setEpisodeCount(newAnime.getEpisodeCount());
+	    existingAnime.setCoverImage(newAnime.getCoverImage());
+	    existingAnime.setDescription(newAnime.getDescription());
+	    existingAnime.setAverageScore(newAnime.getAverageScore());
+	    existingAnime.setPopularity(newAnime.getPopularity());
+	    existingAnime.setReleaseDate(newAnime.getReleaseDate());
+	    existingAnime.setUpdatedAt(newAnime.getUpdatedAt());
+	}
+
 
 }

@@ -81,6 +81,7 @@ public class AnimeController {
     @PostMapping("/test-scheduler")
     public ResponseEntity<String> fetchAnimeData() {
         animeScheduler.updateAnimeData();
+    	//animeScheduler.dragonBallTest();
         return ResponseEntity.ok("Anime data fetch initiated.");
     }
 }
