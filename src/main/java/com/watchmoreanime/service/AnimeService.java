@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,6 +28,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchmoreanime.domain.Anime;
 import com.watchmoreanime.repository.AnimeRepository;
+
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class AnimeService {
@@ -575,5 +578,17 @@ public class AnimeService {
 	    existingAnime.setUpdatedAt(newAnime.getUpdatedAt());
 	}
 
+	public List<Anime> getAllAnime(){
+		return animeRepository.findAll();
+	}
 
+	public List<Anime> getTop10AnimeByAverageScore() {
+		Pageable topTen = PageRequest.of(0,10);
+        return animeRepository.findTop10ByAverageScoreLimit(topTen);
+    }
+
+	public List<Anime> getTop10AnimeByPopularity() {
+		Pageable topTen = PageRequest.of(0,10);
+        return animeRepository.findTop10ByPopularityLimit(topTen);
+    }
 }

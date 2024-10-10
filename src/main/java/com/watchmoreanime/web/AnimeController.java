@@ -21,7 +21,7 @@ public class AnimeController {
 
     @Autowired
     private AnimeRepository animeRepository;
-    
+
     @Autowired
     private AnimeUpdateScheduler animeScheduler;
 
@@ -62,28 +62,39 @@ public class AnimeController {
         model.addAttribute("animes", animes);
         return "anime-genre"; // Return the name of your HTML template
     }
-    
+
     @GetMapping("/anime-range")
     public String fetchAnimeByScoreRange(
-        @RequestParam("averageScoreGreater") int averageScoreGreater,
-        @RequestParam("averageScoreLesser") int averageScoreLesser,
-        Model model) {
-        
+            @RequestParam("averageScoreGreater") int averageScoreGreater,
+            @RequestParam("averageScoreLesser") int averageScoreLesser,
+            Model model) {
+
         // Fetch anime from an external source and save to the database if needed
         List<Anime> fetchedAnime = animeService.findByAverageScoreBetween(averageScoreGreater, averageScoreLesser);
-        System.out.println(" From Controller -> Lower Bound: " + averageScoreGreater + ", Upper Bound: " + averageScoreLesser);
-     // Add the fetched anime to the model
+        System.out.println(
+                " From Controller -> Lower Bound: " + averageScoreGreater + ", Upper Bound: " + averageScoreLesser);
+        // Add the fetched anime to the model
         model.addAttribute("animes", fetchedAnime);
-        
+
         return "anime-by-range";
     }
-    
+
     @PostMapping("/test-scheduler")
     public ResponseEntity<String> fetchAnimeData() {
         animeScheduler.updateAnimeData();
-    	//animeScheduler.dragonBallTest();
+        // animeScheduler.dragonBallTest();
         return ResponseEntity.ok("Anime data fetch initiated.");
     }
+
+    @GetMapping("/recommended-anime") // Adjusted endpoint for API
+    public ResponseEntity<List<Anime>> getTop10RecommendedAnime() {
+        List<Anime> topAnime = animeService.getTop10AnimeByPopularity();
+        return ResponseEntity.ok(topAnime); // Return the top anime as JSON
+    }
+
+    @GetMapping("/top-anime") // Adjusted endpoint for API
+    public ResponseEntity<List<Anime>> getTop10HighestRatedAnime() {
+        List<Anime> topAnime = animeService.getTop10AnimeByAverageScore();
+        return ResponseEntity.ok(topAnime); // Return the top anime as JSON
+    }
 }
-
-
