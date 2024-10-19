@@ -43,8 +43,8 @@ const MainContent = ({ userId }) => {
                 <ul>
                     <li><button onClick={() => setActiveView('home')}>Home</button></li>
                     <li><button onClick={() => setActiveView('watchlist')}>My Watchlist</button></li>
-                    <li><button onClick={() => setActiveView('topAnime')}>Top Anime</button></li>
-                    <li><button onClick={() => setActiveView('recommendations')}>Recommendations</button></li>
+                    <li><button onClick={() => setActiveView('topAnime')}>By Rating</button></li>
+                    <li><button onClick={() => setActiveView('recommendations')}>Most Popular</button></li>
                     <li><button onClick={() => setActiveView('search')}>Search</button></li>
                 </ul>
             </aside>
@@ -55,6 +55,13 @@ const MainContent = ({ userId }) => {
                     <Search openModal={openModal} userId={userId} /> 
                 ) : (
                     <>
+                        {activeView === 'home' && (
+                            <>
+                                {/* Render both lists for the "home" view */}
+                                <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
+                                <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
+                            </>
+                        )}
                         {activeView === 'recommendations' && (
                             <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
                         )}
