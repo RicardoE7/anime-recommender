@@ -17,9 +17,10 @@ public class Rating {
 	@ManyToOne
 	@JoinColumn(name = "anime_id", nullable = false)
 	private Anime anime;
-
+	
 	@Column(nullable = false)
-	private int rating;
+	private Integer score;
+
 
 	// Getters and Setters
 	public Long getId() {
@@ -46,11 +47,12 @@ public class Rating {
 		this.anime = anime;
 	}
 
-	public int getRating() {
-		return rating;
+	public Integer getScore() {
+		return score;
 	}
 
-	public void setRating(int rating) {
-		this.rating = rating;
+	public void setScore(Integer score) {
+		this.score = score;
 	}
+	
 }

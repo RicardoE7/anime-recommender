@@ -97,4 +97,10 @@ public class AnimeController {
         List<Anime> topAnime = animeService.getTop10AnimeByAverageScore();
         return ResponseEntity.ok(topAnime); // Return the top anime as JSON
     }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<Anime>> searchAnime(@RequestParam("query") String query) {
+        List<Anime> results = animeService.searchAnimeByTitle(query);
+        return ResponseEntity.ok(results); // Return JSON response
+    }
 }

@@ -591,4 +591,8 @@ public class AnimeService {
 		Pageable topTen = PageRequest.of(0,10);
         return animeRepository.findTop10ByPopularityLimit(topTen);
     }
+	
+	public List<Anime> searchAnimeByTitle(String query) {
+        return animeRepository.findByTitleContainingIgnoreCase(query);
+    }
 }

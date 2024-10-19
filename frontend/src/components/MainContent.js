@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import RecommendationList from './RecommendationList';
 import HighestRatedList from './HighestRatedList';
-import AnimeModal from './AnimeModal'; // Import the AnimeModal component
+import AnimeModal from './AnimeModal';
+import Search from './Search'; // Import the Search component
+import '../styles/main-content.css';
 
-const MainContent = () => {
+const MainContent = ({ userId }) => {
     const [recommendations, setRecommendations] = useState([]);
     const [highestRated, setHighestRated] = useState([]);
     const [modalData, setModalData] = useState(null); // Manage modal state
+    const [activeView, setActiveView] = useState('home'); // Track the active view, default to 'home'
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Fetch recommended anime
-                const recommendedResponse = await fetch('http://localhost:8080/recommended-anime'); // Adjust this endpoint
+                const recommendedResponse = await fetch('http://localhost:8080/recommended-anime');
                 const recommendedData = await recommendedResponse.json();
                 setRecommendations(recommendedData);
 
                 // Fetch highest rated anime
-                const highestRatedResponse = await fetch('http://localhost:8080/top-anime'); // Adjust this endpoint
+                const highestRatedResponse = await fetch('http://localhost:8080/top-anime');
                 const highestRatedData = await highestRatedResponse.json();
                 setHighestRated(highestRatedData);
             } catch (error) {
@@ -34,26 +37,55 @@ const MainContent = () => {
     };
 
     return (
-        <main>
-            <RecommendationList recommendations={recommendations} openModal={openModal} />
-            <HighestRatedList highestRated={highestRated} openModal={openModal} />
-            
-            {/* Render AnimeModal if modalData is set */}
-            {modalData && (
-                <AnimeModal
-                    title={modalData.title}
-                    coverImage={modalData.coverImage}
-                    description={modalData.description}
-                    episodes={modalData.episodeCount}
-                    genres={modalData.genres}
-                    averageScore={modalData.averageScore}
-                    onClose={() => setModalData(null)} // Close the modal
-                />
-            )}
-        </main>
+        <div className="main-layout">
+            {/* Sidebar */}
+            <aside className="sidebar">
+                <ul>
+                    <li><button onClick={() => setActiveView('home')}>Home</button></li>
+                    <li><button onClick={() => setActiveView('watchlist')}>My Watchlist</button></li>
+                    <li><button onClick={() => setActiveView('topAnime')}>Top Anime</button></li>
+                    <li><button onClick={() => setActiveView('recommendations')}>Recommendations</button></li>
+                    <li><button onClick={() => setActiveView('search')}>Search</button></li>
+                </ul>
+            </aside>
+
+            {/* Main Content */}
+            <main className="content">
+                {activeView === 'search' ? (
+                    <Search openModal={openModal} userId={userId} /> 
+                ) : (
+                    <>
+                        {activeView === 'recommendations' && (
+                            <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
+                        )}
+                        {activeView === 'topAnime' && (
+                            <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
+                        )}
+                    </>
+                )}
+
+                {/* Render AnimeModal if modalData is set */}
+                {modalData && (
+                    <AnimeModal
+                        title={modalData.title}
+                        coverImage={modalData.coverImage}
+                        description={modalData.description}
+                        episodes={modalData.episodeCount}
+                        genres={modalData.genres}
+                        averageScore={modalData.averageScore}
+                        onClose={() => setModalData(null)} // Close the modal
+                    />
+                )}
+            </main>
+        </div>
     );
 };
 
 export default MainContent;
+
+
+
+
+
 
 

@@ -14,7 +14,7 @@ header nav {
 }
 
 header nav a {
-    margin-left: 10px; /* Space between links */
+    margin-left: 10px;
     text-decoration: none;
     color: #007bff;
 }
@@ -25,35 +25,34 @@ header nav a:hover {
 
 .anime-scroll {
     display: flex;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    gap: 20px; /* Space between anime cards */
+    overflow-x: auto;
+    gap: 20px;
     padding: 10px;
-    scroll-behavior: smooth; /* Smooth scrolling effect */
-    -webkit-overflow-scrolling: touch; /* Enable momentum scrolling for touch devices */
-    will-change: scroll; /* Hint browser to optimize for scrolling */
-    -webkit-user-select: none; /* Disable text selection on WebKit browsers */
-    -moz-user-select: none; /* Disable text selection on Firefox */
-    -ms-user-select: none; /* Disable text selection on Internet Explorer/Edge */
-    user-select: none; /* Disable text selection on other browsers */
-    box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
 }
 
 .anime-card {
-    flex: 0 0 auto; /* Prevent the anime card from shrinking */
-    width: 250px; /* Fixed width for each card */
+    flex: 0 0 auto;
+    width: 250px;
     border: 1px solid #ddd;
     padding: 15px;
     border-radius: 8px;
     text-align: center;
     background-color: #fff;
-    cursor: grab; /* Indicate draggable */
-    -webkit-user-select: none; /* Disable text selection on WebKit browsers */
-    -moz-user-select: none; /* Disable text selection on Firefox */
-    -ms-user-select: none; /* Disable text selection on Internet Explorer/Edge */
-    user-select: none; /* Disable text selection on other browsers */
+    cursor: grab;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-/* Change cursor to 'grabbing' when dragging */
 .anime-scroll.active .anime-card {
     cursor: grabbing;
 }
@@ -61,10 +60,9 @@ header nav a:hover {
 .anime-cover {
     max-width: 100%;
     height: auto;
-    margin-bottom: 10px; /* Add margin for spacing */
-  }
+    margin-bottom: 10px;
+}
 
-/* Horizontal scrollbar styling (optional) */
 .anime-scroll::-webkit-scrollbar {
     height: 10px;
 }
@@ -96,26 +94,28 @@ header nav a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7); /* Slightly darker for better visibility */
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    z-index: 1000; /* Make sure it's above other elements */
-  }
-  
-  /* Modal content */
-  .modal-content {
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
     background: white;
     padding: 20px;
     border-radius: 8px;
     position: relative;
-    max-width: 90%; /* Use percentage for responsive design */
-    max-height: 80%; /* Limit height to avoid cutting off */
-    overflow-y: auto; /* Add scroll if content is too tall */
-  }
-  
-  /* Close button styling */
-  .close-btn {
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center-align child elements horizontally */
+}
+
+.close-btn {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -123,12 +123,12 @@ header nav a:hover {
     border: none;
     font-size: 18px;
     cursor: pointer;
-  }
+}
 
 .close {
     color: #aaa;
     float: right;
-    font-size: 28px;
+    font-size: 40px;
     font-weight: bold;
 }
 
@@ -142,7 +142,7 @@ header nav a:hover {
 .score-links {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Center align the links */
+    justify-content: center;
     margin-top: 20px;
 }
 
@@ -151,12 +151,27 @@ header nav a:hover {
     margin: 5px 10px;
     padding: 10px 15px;
     text-decoration: none;
-    background-color: #007bff; /* Primary color */
+    background-color: #007bff;
     color: #fff;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
 .score-links a:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #0056b3;
 }
+
+
+/* Close button styling for left alignment */
+.close {
+    position: absolute;
+    top: 10px;
+    left: 10px; /* Align to the left */
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+

@@ -32,5 +32,8 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
 
 	@Query(value = "SELECT a FROM Anime a ORDER BY a.popularity DESC")
     List<Anime> findTop10ByPopularityLimit(Pageable pageable);
+	
+	// Custom query method to search by title, case-insensitive and partial match
+    List<Anime> findByTitleContainingIgnoreCase(String title);
     
 }

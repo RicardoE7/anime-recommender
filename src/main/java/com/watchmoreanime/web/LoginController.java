@@ -1,13 +1,19 @@
 package com.watchmoreanime.web;
 
-import com.watchmoreanime.domain.User;
-import com.watchmoreanime.service.UserService;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.watchmoreanime.domain.User;
+import com.watchmoreanime.service.UserService;
 
 @Controller
 public class LoginController {
@@ -21,21 +27,20 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam("username") String username,
-                            @RequestParam("password") String password,
-                            Model model) {
-        // Authenticate user
+    public ResponseEntity<?> loginUser(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password) {
         User authenticatedUser = userService.authenticate(username, password);
 
-        // If authentication is successful
         if (authenticatedUser != null) {
-            // Store user session, redirect to recommended page (or wherever you want)
-            // For now, just redirect to a successful login page or a recommendation page
-            return "redirect:/recommended"; // Redirect to your recommendation page
+            // Return a JSON response with user details
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("id", authenticatedUser.getId());
+            userData.put("username", authenticatedUser.getUsername());
+            return ResponseEntity.ok(userData); // Return user data with ID and username
         } else {
-            // Authentication failed, return to login page with an error message
-            model.addAttribute("error", "Invalid username or password.");
-            return "login";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("error", "Invalid username or password."));
         }
     }
 }
