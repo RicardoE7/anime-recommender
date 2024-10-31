@@ -4,6 +4,7 @@ import HighestRatedList from './HighestRatedList';
 import AnimeModal from './AnimeModal';
 import Search from './Search';
 import Genres from './Genres'; // Import the Genres component
+import GenreResults from './GenreResults'; // Import the GenreResults component
 import '../styles/main-content.css';
 
 const MainContent = ({ userId }) => {
@@ -39,14 +40,16 @@ const MainContent = ({ userId }) => {
         fetchData();
     }, []);
 
-    // Filter recommendations and highest-rated lists based on the selected genre
-    const filteredRecommendations = selectedGenre
-        ? recommendations.filter(anime => anime.genres.includes(selectedGenre))
-        : recommendations;
+    // Handle genre selection
+    const handleGenreSelect = (genre) => {
+        setSelectedGenre(genre);
+        setActiveView('genre'); // Set active view to genre results
+    };
 
-    const filteredHighestRated = selectedGenre
-        ? highestRated.filter(anime => anime.genres.includes(selectedGenre))
-        : highestRated;
+    const clearGenreFilter = () => {
+        setSelectedGenre(null);
+        setActiveView('home'); // Return to home view when clearing the filter
+    };
 
     const openModal = (anime) => {
         setModalData(anime);
@@ -66,8 +69,8 @@ const MainContent = ({ userId }) => {
                 <Genres
                     genres={genres}
                     selectedGenre={selectedGenre}
-                    onGenreSelect={setSelectedGenre} // Pass the setter function to handle genre selection
-                    clearFilter={() => setSelectedGenre(null)} // Clear genre filter when needed
+                    onGenreSelect={handleGenreSelect} // Update to handle genre selection
+                    clearFilter={clearGenreFilter} // Clear genre filter when needed
                 />
             </aside>
 
@@ -79,15 +82,18 @@ const MainContent = ({ userId }) => {
                     <>
                         {activeView === 'home' && (
                             <>
-                                <RecommendationList recommendations={filteredRecommendations} openModal={openModal} userId={userId} />
-                                <HighestRatedList highestRated={filteredHighestRated} openModal={openModal} userId={userId} />
+                                <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
+                                <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
                             </>
                         )}
                         {activeView === 'recommendations' && (
-                            <RecommendationList recommendations={filteredRecommendations} openModal={openModal} userId={userId} />
+                            <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
                         )}
                         {activeView === 'topAnime' && (
-                            <HighestRatedList highestRated={filteredHighestRated} openModal={openModal} userId={userId} />
+                            <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
+                        )}
+                        {activeView === 'genre' && selectedGenre && (
+                            <GenreResults openModal={openModal} userId={userId} genre={selectedGenre} clearFilter={clearGenreFilter} /> 
                         )}
                     </>
                 )}
@@ -110,6 +116,10 @@ const MainContent = ({ userId }) => {
 };
 
 export default MainContent;
+
+
+
+
 
 
 

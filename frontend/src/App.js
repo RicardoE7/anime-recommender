@@ -9,6 +9,8 @@ import AnimeModal from './components/AnimeModal';
 import Login from './components/Login';
 import Register from './components/Register'; // Import the Register component
 import Search from './components/Search'; // Import the Search component
+import Genres from './components/Genres'; // Import the Genres component
+import GenreResults from './components/GenreResults'; // Import the GenreResults component
 
 const App = () => {
     const [username, setUsername] = React.useState(null);
@@ -27,11 +29,12 @@ const App = () => {
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} /> {/* Add Register Route */}
                     <Route path="/search" element={<Search />} /> {/* Add Search Route */}
+                    <Route path="/genres" element={<Genres />} /> {/* Route for Genres */}
+                    <Route path="/genre/:genre" element={<GenreResults />} /> {/* Route for GenreResults */}
                     <Route path="/" element={username ? (
                         <>
                             <Header username={username} />
                             <MainContent userId={userId} /> {/* Pass userId to MainContent */}
-                            <ScoreLinks />
                             <Footer />
                             {modalData && (
                                 <AnimeModal
@@ -51,6 +54,7 @@ const App = () => {
 };
 
 export default App;
+
 
 
 

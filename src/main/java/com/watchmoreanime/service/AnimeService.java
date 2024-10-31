@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -617,6 +618,11 @@ public class AnimeService {
 			genreRepository.save(genre);
 		}
 		return genreList;
+	}
+	
+	public List<Anime> getAnimeByGenre(String genre) {
+	    List<Anime> animePage = animeRepository.findByGenre(genre);
+	    return animePage;
 	}
 	
 	

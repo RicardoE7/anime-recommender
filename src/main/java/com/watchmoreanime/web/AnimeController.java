@@ -56,12 +56,6 @@ public class AnimeController {
         return "anime-list"; // Return the name of your HTML template
     }
 
-    @GetMapping("/genre/{genre}")
-    public String getAnimeByGenre(@PathVariable String genre, Model model) {
-        List<Anime> animes = animeRepository.findByGenresContaining(genre);
-        model.addAttribute("animes", animes);
-        return "anime-genre"; // Return the name of your HTML template
-    }
 
     @GetMapping("/anime-range")
     public String fetchAnimeByScoreRange(

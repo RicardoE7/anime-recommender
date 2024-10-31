@@ -1,29 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-const Genres = () => {
-    const [genres, setGenres] = useState([]);
-
-    useEffect(() => {
-        const fetchGenres = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/genres'); // Adjust the port if needed
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setGenres(data); // data should be an array of strings based on your API
-            } catch (error) {
-                console.error('Failed to fetch genres:', error);
-            }
-        };
-
-        fetchGenres();
-    }, []);
-
-    const handleGenreClick = (genre) => {
-        // Handle genre click, e.g., navigate to a specific genre page
-        console.log(`Genre clicked: ${genre}`);
-    };
+const Genres = ({ genres, selectedGenre, onGenreSelect, clearFilter }) => {
+    // You no longer need to fetch genres here since you're passing them as props
+    // If you still need to fetch genres here, remove the genres prop from MainContent
+    // and implement fetching logic in this component
 
     return (
         <div>
@@ -32,17 +12,22 @@ const Genres = () => {
                 {genres.map((genre, index) => (
                     <button 
                         key={index} 
-                        onClick={() => handleGenreClick(genre)} 
+                        onClick={() => onGenreSelect(genre)} // Call onGenreSelect to update state in MainContent
                         style={{ padding: '10px', cursor: 'pointer' }}
                     >
                         {genre} {/* Display genre name */}
                     </button>
                 ))}
+                <button onClick={clearFilter} style={{ padding: '10px', cursor: 'pointer' }}>
+                    Clear Filter
+                </button>
             </div>
         </div>
     );
 };
 
 export default Genres;
+
+
 
 

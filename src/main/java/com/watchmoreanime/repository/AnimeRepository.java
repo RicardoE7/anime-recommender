@@ -2,6 +2,7 @@ package com.watchmoreanime.repository;
 
 import java.util.List;
 
+import org.hibernate.query.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,5 +36,8 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
 	
 	// Custom query method to search by title, case-insensitive and partial match
     List<Anime> findByTitleContainingIgnoreCase(String title);
+    
+    @Query("SELECT a FROM Anime a JOIN a.genres g WHERE g = :genre")
+    List<Anime> findByGenre(@Param("genre") String genre);
     
 }
