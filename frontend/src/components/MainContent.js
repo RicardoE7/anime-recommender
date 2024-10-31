@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import RecommendationList from './RecommendationList';
 import HighestRatedList from './HighestRatedList';
 import AnimeModal from './AnimeModal';
-import Search from './Search'; // Import the Search component
+import Search from './Search';
+import Genres from './Genres'; // Import the Genres component
 import '../styles/main-content.css';
 
 const MainContent = ({ userId }) => {
     const [recommendations, setRecommendations] = useState([]);
     const [highestRated, setHighestRated] = useState([]);
-    const [modalData, setModalData] = useState(null); // Manage modal state
-    const [activeView, setActiveView] = useState('home'); // Track the active view, default to 'home'
+    const [genres, setGenres] = useState([]); // State to hold genres
+    const [selectedGenre, setSelectedGenre] = useState(null); // Track the selected genre filter
+    const [modalData, setModalData] = useState(null);
+    const [activeView, setActiveView] = useState('home');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,15 +26,28 @@ const MainContent = ({ userId }) => {
                 const highestRatedResponse = await fetch('http://localhost:8080/top-anime');
                 const highestRatedData = await highestRatedResponse.json();
                 setHighestRated(highestRatedData);
+
+                // Fetch genres
+                const genresResponse = await fetch('http://localhost:8080/genres');
+                const genresData = await genresResponse.json();
+                setGenres(Array.isArray(genresData) ? genresData : []); // Ensure genresData is an array
             } catch (error) {
-                console.error("Error fetching anime data:", error);
+                console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
     }, []);
 
-    // Function to handle setting modal data
+    // Filter recommendations and highest-rated lists based on the selected genre
+    const filteredRecommendations = selectedGenre
+        ? recommendations.filter(anime => anime.genres.includes(selectedGenre))
+        : recommendations;
+
+    const filteredHighestRated = selectedGenre
+        ? highestRated.filter(anime => anime.genres.includes(selectedGenre))
+        : highestRated;
+
     const openModal = (anime) => {
         setModalData(anime);
     };
@@ -47,26 +63,31 @@ const MainContent = ({ userId }) => {
                     <li><button onClick={() => setActiveView('recommendations')}>Most Popular</button></li>
                     <li><button onClick={() => setActiveView('search')}>Search</button></li>
                 </ul>
+                <Genres
+                    genres={genres}
+                    selectedGenre={selectedGenre}
+                    onGenreSelect={setSelectedGenre} // Pass the setter function to handle genre selection
+                    clearFilter={() => setSelectedGenre(null)} // Clear genre filter when needed
+                />
             </aside>
 
             {/* Main Content */}
             <main className="content">
                 {activeView === 'search' ? (
-                    <Search openModal={openModal} userId={userId} /> 
+                    <Search openModal={openModal} userId={userId} />
                 ) : (
                     <>
                         {activeView === 'home' && (
                             <>
-                                {/* Render both lists for the "home" view */}
-                                <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
-                                <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
+                                <RecommendationList recommendations={filteredRecommendations} openModal={openModal} userId={userId} />
+                                <HighestRatedList highestRated={filteredHighestRated} openModal={openModal} userId={userId} />
                             </>
                         )}
                         {activeView === 'recommendations' && (
-                            <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
+                            <RecommendationList recommendations={filteredRecommendations} openModal={openModal} userId={userId} />
                         )}
                         {activeView === 'topAnime' && (
-                            <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
+                            <HighestRatedList highestRated={filteredHighestRated} openModal={openModal} userId={userId} />
                         )}
                     </>
                 )}
@@ -80,7 +101,7 @@ const MainContent = ({ userId }) => {
                         episodes={modalData.episodeCount}
                         genres={modalData.genres}
                         averageScore={modalData.averageScore}
-                        onClose={() => setModalData(null)} // Close the modal
+                        onClose={() => setModalData(null)}
                     />
                 )}
             </main>
@@ -89,6 +110,8 @@ const MainContent = ({ userId }) => {
 };
 
 export default MainContent;
+
+
 
 
 

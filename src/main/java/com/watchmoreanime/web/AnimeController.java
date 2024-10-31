@@ -103,4 +103,6 @@ public class AnimeController {
         List<Anime> results = animeService.searchAnimeByTitle(query);
         return ResponseEntity.ok(results); // Return JSON response
     }
+    
+   
 }

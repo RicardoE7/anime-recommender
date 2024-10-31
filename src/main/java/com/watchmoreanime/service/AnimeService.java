@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,15 +29,17 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchmoreanime.domain.Anime;
+import com.watchmoreanime.domain.Genre;
 import com.watchmoreanime.repository.AnimeRepository;
-
-import org.springframework.data.domain.Pageable;
+import com.watchmoreanime.repository.GenreRepository;
 
 @Service
 public class AnimeService {
 
 	@Autowired
 	private AnimeRepository animeRepository;
+	@Autowired
+	private GenreRepository genreRepository;
 
 	private final String apiUrl = "https://graphql.anilist.co/";
 
@@ -595,4 +599,25 @@ public class AnimeService {
 	public List<Anime> searchAnimeByTitle(String query) {
         return animeRepository.findByTitleContainingIgnoreCase(query);
     }
+
+	public List<String> getAllGenres() {
+		List<String> genreList = new ArrayList<String>();
+		HashSet<String> genreSet = new HashSet<String>();
+		List<Anime> animeList = animeRepository.findAll();
+		for(Anime anime : animeList) {
+			for(String genre : anime.getGenres()) {
+				genreSet.add(genre);
+			}
+		}
+		for(String genre : genreSet) {
+			genreList.add(genre);
+		}
+		for(String genreName: genreList) {
+			Genre genre = new Genre(genreName);
+			genreRepository.save(genre);
+		}
+		return genreList;
+	}
+	
+	
 }
