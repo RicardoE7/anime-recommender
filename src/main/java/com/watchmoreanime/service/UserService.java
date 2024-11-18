@@ -1,6 +1,7 @@
 package com.watchmoreanime.service;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,5 +100,10 @@ public class UserService {
         ratingRepository.save(ratingEntry);
 
         return true; // Successfully added to watchlist and saved the rating
+    }
+
+    public List<Anime> getWatchList(Long userId) {
+    	System.out.println("The UserId is being passed to the watchlist component " + userId);
+    	return userRepository.findWatchListByUserId(userId);
     }
 }

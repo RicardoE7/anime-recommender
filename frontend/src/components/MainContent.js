@@ -6,6 +6,7 @@ import Search from './Search';
 import Genres from './Genres'; // Import the Genres component
 import GenreResults from './GenreResults'; // Import the GenreResults component
 import '../styles/main-content.css';
+import WatchList from './WatchList';
 
 const MainContent = ({ userId }) => {
     const [recommendations, setRecommendations] = useState([]);
@@ -85,6 +86,9 @@ const MainContent = ({ userId }) => {
                                 <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
                                 <HighestRatedList highestRated={highestRated} openModal={openModal} userId={userId} />
                             </>
+                        )}
+                        {activeView === 'watchlist' && (
+                            <WatchList openModal={openModal} userId={userId} />
                         )}
                         {activeView === 'recommendations' && (
                             <RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />
