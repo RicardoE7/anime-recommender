@@ -57,7 +57,7 @@ public class UserController {
     
     @GetMapping("/{userId}/watchlist")
     public List<Anime> getWatchList(@PathVariable Long userId) {
-        return userService.getWatchList(userId);
+        return userService.getWatchListWithRatings(userId);
     }
 }
 

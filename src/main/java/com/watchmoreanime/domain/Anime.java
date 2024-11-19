@@ -7,11 +7,10 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "anime")
@@ -52,6 +51,9 @@ public class Anime {
 	
 	@Column(nullable = false)
 	private LocalDateTime updatedAt;
+	
+	@Transient
+    private Integer userRating;
 
 	// Getters and Setters
 	public Long getId() {
@@ -133,6 +135,15 @@ public class Anime {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
+	public Integer getUserRating() {
+		return userRating;
+	}
+
+	public void setUserRating(Integer userRating) {
+		this.userRating = userRating;
+	}
+	
 
 	
 	

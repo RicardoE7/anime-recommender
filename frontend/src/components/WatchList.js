@@ -36,6 +36,7 @@ const WatchList = ({ userId, openModal }) => {
               <p>Episodes: {anime.episodeCount || 'N/A'}</p>
               <p>Genres: {anime.genres ? anime.genres.join(', ') : 'N/A'}</p>
               <p>Score: {anime.averageScore || 'N/A'}</p>
+              <p>Your Score: {anime.userRating !== null ? anime.userRating : 'Not rated yet'}</p>
               <button className="more-info-btn" onClick={() => openModal(anime)}>More Info</button>
             </div>
           ))

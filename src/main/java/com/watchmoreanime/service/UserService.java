@@ -3,6 +3,7 @@ package com.watchmoreanime.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,4 +107,15 @@ public class UserService {
     	System.out.println("The UserId is being passed to the watchlist component " + userId);
     	return userRepository.findWatchListByUserId(userId);
     }
+    
+    public List<Anime> getWatchListWithRatings(Long userId) {
+        List<Object[]> results = userRepository.findWatchListWithRatings(userId);
+        return results.stream().map(result -> {
+            Anime anime = (Anime) result[0];
+            Integer userRating = (Integer) result[1]; // Fetch user's rating
+            anime.setUserRating(userRating); // Set transient userRating field
+            return anime;
+        }).collect(Collectors.toList());
+    }
+
 }
