@@ -80,15 +80,15 @@ public class AnimeController {
         return ResponseEntity.ok("Anime data fetch initiated.");
     }
 
-    @GetMapping("/recommended-anime") // Adjusted endpoint for API
-    public ResponseEntity<List<Anime>> getTop10RecommendedAnime() {
-        List<Anime> topAnime = animeService.getTop10AnimeByPopularity();
-        return ResponseEntity.ok(topAnime); // Return the top anime as JSON
+    @GetMapping("/recommended-anime/{userId}")
+    public ResponseEntity<List<Anime>> getTop10RecommendedAnime(@PathVariable Long userId) {
+        List<Anime> topAnime = animeService.getTop10AnimeExcludingWatchlist(userId);
+        return ResponseEntity.ok(topAnime);
     }
 
-    @GetMapping("/top-anime") // Adjusted endpoint for API
-    public ResponseEntity<List<Anime>> getTop10HighestRatedAnime() {
-        List<Anime> topAnime = animeService.getTop10AnimeByAverageScore();
+    @GetMapping("/top-anime/{userId}") // Adjusted endpoint for API
+    public ResponseEntity<List<Anime>> getTop10HighestRatedAnime(@PathVariable Long userId) {
+        List<Anime> topAnime = animeService.getTop10AnimeByAverageScoreExcludingWatchlist(userId);
         return ResponseEntity.ok(topAnime); // Return the top anime as JSON
     }
     

@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -31,8 +30,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchmoreanime.domain.Anime;
 import com.watchmoreanime.domain.Genre;
+import com.watchmoreanime.domain.User;
 import com.watchmoreanime.repository.AnimeRepository;
 import com.watchmoreanime.repository.GenreRepository;
+import com.watchmoreanime.repository.UserRepository;
 
 @Service
 public class AnimeService {
@@ -41,6 +42,8 @@ public class AnimeService {
 	private AnimeRepository animeRepository;
 	@Autowired
 	private GenreRepository genreRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	private final String apiUrl = "https://graphql.anilist.co/";
 
@@ -592,9 +595,35 @@ public class AnimeService {
         return animeRepository.findTop10ByAverageScoreLimit(topTen);
     }
 
-	public List<Anime> getTop10AnimeByPopularity() {
-		Pageable topTen = PageRequest.of(0,10);
-        return animeRepository.findTop10ByPopularityLimit(topTen);
+	public List<Anime> getTop10AnimeExcludingWatchlist(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        List<Long> watchlistIds = user.getWatchList().stream()
+            .map(Anime::getId)
+            .toList();
+
+        List<Anime> result = new ArrayList<>();
+        int page = 0;
+
+        while (result.size() < 10) {
+            Pageable pageable = PageRequest.of(page, 10); 
+            List<Anime> animePage = animeRepository.findTop10ByPopularityLimit(pageable);
+
+            List<Anime> filtered = animePage.stream()
+                .filter(anime -> !watchlistIds.contains(anime.getId()))
+                .toList();
+
+            result.addAll(filtered);
+
+            if (animePage.isEmpty()) {
+                break;
+            }
+
+            page++;
+        }
+
+        return result.size() > 10 ? result.subList(0, 10) : result;
     }
 	
 	public List<Anime> searchAnimeByTitle(String query) {
@@ -623,6 +652,37 @@ public class AnimeService {
 	public List<Anime> getAnimeByGenre(String genre) {
 	    List<Anime> animePage = animeRepository.findByGenre(genre);
 	    return animePage;
+	}
+
+	public List<Anime> getTop10AnimeByAverageScoreExcludingWatchlist(Long userId) {
+		User user = userRepository.findById(userId)
+	            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+		
+		List<Long> watchlistIds = user.getWatchList().stream()
+	            .map(Anime::getId)
+	            .toList();
+
+	        List<Anime> result = new ArrayList<>();
+	        int page = 0;
+
+	        while (result.size() < 10) {
+	            Pageable pageable = PageRequest.of(page, 10); 
+	            List<Anime> animePage = animeRepository.findTop10ByAverageScoreLimit(pageable);
+
+	            List<Anime> filtered = animePage.stream()
+	                .filter(anime -> !watchlistIds.contains(anime.getId()))
+	                .toList();
+
+	            result.addAll(filtered);
+
+	            if (animePage.isEmpty()) {
+	                break;
+	            }
+
+	            page++;
+	        }
+
+	        return result.size() > 10 ? result.subList(0, 10) : result;
 	}
 	
 	

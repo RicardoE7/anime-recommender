@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const RecommendationList = ({ recommendations, openModal, userId }) => {
+const RecommendationList = ({ recommendations, openModal, userId, refreshData }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSeenItClick = async (anime) => {
@@ -29,6 +29,7 @@ const RecommendationList = ({ recommendations, openModal, userId }) => {
 
       if (response.ok) {
         alert(`"${anime.title}" added to your watchlist with a rating of ${numericRating}.`);
+        refreshData();
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message || 'Failed to add to watchlist. Please try again.');
@@ -38,6 +39,12 @@ const RecommendationList = ({ recommendations, openModal, userId }) => {
       setErrorMessage('An error occurred while adding to watchlist. Please try again.');
     }
   };
+
+  // Fallback check for recommendations
+  if (!Array.isArray(recommendations)) {
+    console.error('Invalid recommendations prop:', recommendations);
+    return <p>No recommendations available.</p>;
+  }
 
   return (
     <section id="most-popular">

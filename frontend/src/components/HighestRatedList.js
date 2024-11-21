@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const HighestRatedList = ({ highestRated, openModal, userId }) => { // Assuming userId is passed as a prop
+const HighestRatedList = ({ highestRated, openModal, userId, refreshData }) => { // Assuming userId is passed as a prop
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSeenItClick = async (anime) => {
@@ -35,6 +35,7 @@ const HighestRatedList = ({ highestRated, openModal, userId }) => { // Assuming 
       if (response.ok) {
         // Handle success (e.g., show a success message or update UI)
         alert(`"${anime.title}" added to your watchlist with a rating of ${numericRating}.`);
+        refreshData();
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message || 'Failed to add to watchlist. Please try again.');

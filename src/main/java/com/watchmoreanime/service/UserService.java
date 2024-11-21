@@ -41,6 +41,7 @@ public class UserService {
         // Create a new user
         User user = new User();
         user.setUsername(registrationDTO.getUsername());
+        user.setEmail(registrationDTO.getEmail());
         user.setPassword(registrationDTO.getPassword()); // No encryption
 
         // Save user to the database
