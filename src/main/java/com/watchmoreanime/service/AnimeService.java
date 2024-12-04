@@ -44,6 +44,7 @@ public class AnimeService {
 	private GenreRepository genreRepository;
 	@Autowired
 	private UserRepository userRepository;
+	
 
 	private final String apiUrl = "https://graphql.anilist.co/";
 
@@ -684,6 +685,41 @@ public class AnimeService {
 
 	        return result.size() > 10 ? result.subList(0, 10) : result;
 	}
+	
+	private Map<String, Double> calculateGenreWeights(List<Anime> userWatchlist) {
+	    Map<String, Double> genreWeights = new HashMap<>();
+	    for (Anime anime : userWatchlist) {
+	        double userRating = anime.getUserRating() != null ? anime.getUserRating() : anime.getAverageScore();
+	        for (String genre : anime.getGenres()) {
+	            genreWeights.put(genre, genreWeights.getOrDefault(genre, 0.0) + userRating);
+	        }
+	    }
+	    return genreWeights;
+	}
+
+	
+	public List<Anime> getRecommendationsBasedOnWatchlist(List<Anime> userWatchlist) {
+	    // 1. Extract user watchlist IDs
+	    List<Long> watchlistIds = userWatchlist.stream().map(Anime::getId).toList();
+
+	    // 2. Calculate genre weights and identify top genres
+	    Map<String, Double> genreWeights = calculateGenreWeights(userWatchlist);
+	    List<String> topGenres = genreWeights.entrySet().stream()
+	        .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue())) // Sort by weight descending
+	        .limit(5) // Limit to top 5 genres
+	        .map(Map.Entry::getKey)
+	        .toList();
+
+	    // 3. Identify highly-rated anime by the user
+	    List<Long> highlyRatedIds = userWatchlist.stream()
+	        .filter(anime -> anime.getUserRating() != null && anime.getUserRating() >= 80) // Customize threshold
+	        .map(Anime::getId)
+	        .toList();
+
+	    // 4. Query the database for recommendations
+	    return animeRepository.findRecommendedAnimeWithWeights(watchlistIds, topGenres, highlyRatedIds);
+	}
+
 	
 	
 }

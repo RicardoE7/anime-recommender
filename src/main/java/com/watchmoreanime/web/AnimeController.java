@@ -15,6 +15,7 @@ import com.watchmoreanime.domain.Anime;
 import com.watchmoreanime.repository.AnimeRepository;
 import com.watchmoreanime.service.AnimeService;
 import com.watchmoreanime.service.AnimeUpdateScheduler;
+import com.watchmoreanime.service.UserService;
 
 @Controller
 public class AnimeController {
@@ -27,6 +28,9 @@ public class AnimeController {
 
     @Autowired
     private AnimeService animeService;
+    
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/anime-details/{animeId}")
     public String getAnimeDetails(@PathVariable("animeId") Long animeId, Model model) {
@@ -98,5 +102,10 @@ public class AnimeController {
         return ResponseEntity.ok(results); // Return JSON response
     }
     
+    @GetMapping("/recommendations/{userId}")
+    public ResponseEntity<List<Anime>> getRecommendedAnime(@PathVariable Long userId) {
+        List<Anime> recommendedAnime = animeService.getRecommendationsBasedOnWatchlist(userService.getWatchList(userId));
+        return ResponseEntity.ok(recommendedAnime); // Return the top anime as JSON
+    }
    
 }

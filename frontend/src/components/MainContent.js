@@ -7,6 +7,8 @@ import Genres from './Genres'; // Import the Genres component
 import GenreResults from './GenreResults'; // Import the GenreResults component
 import '../styles/main-content.css';
 import WatchList from './WatchList';
+import ForYou from './ForYou'
+
 
 const MainContent = ({ userId }) => {
 	const [recommendations, setRecommendations] = useState([]);
@@ -68,6 +70,7 @@ const MainContent = ({ userId }) => {
 				<ul>
 					<li><button onClick={() => setActiveView('home')}>Home</button></li>
 					<li><button onClick={() => setActiveView('watchlist')}>My Watchlist</button></li>
+					<li><button onClick={() => setActiveView('foryou')}>For You</button></li>
 					<li><button onClick={() => setActiveView('topAnime')}>By Rating</button></li>
 					<li><button onClick={() => setActiveView('recommendations')}>Most Popular</button></li>
 					<li><button onClick={() => setActiveView('search')}>Search</button></li>
@@ -94,6 +97,9 @@ const MainContent = ({ userId }) => {
 						)}
 						{activeView === 'watchlist' && (
 							<WatchList openModal={openModal} userId={userId} />
+						)}
+						{activeView === 'foryou' && (
+							<ForYou openModal={openModal} userId={userId} />
 						)}
 						{activeView === 'recommendations' && (
 							<RecommendationList recommendations={recommendations} openModal={openModal} userId={userId} />

@@ -40,4 +40,15 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
     @Query("SELECT a FROM Anime a JOIN a.genres g WHERE g = :genre")
     List<Anime> findByGenre(@Param("genre") String genre);
     
+    @Query("SELECT a FROM Anime a WHERE a.id NOT IN :watchlistIds " +
+    	       "AND EXISTS (SELECT g FROM a.genres g WHERE g IN :topGenres) " +
+    	       "ORDER BY CASE WHEN a.id IN :highlyRatedIds THEN 1 ELSE 2 END, " +
+    	       "a.averageScore DESC, a.popularity DESC")
+    	List<Anime> findRecommendedAnimeWithWeights(
+    	    @Param("watchlistIds") List<Long> watchlistIds,
+    	    @Param("topGenres") List<String> topGenres,
+    	    @Param("highlyRatedIds") List<Long> highlyRatedIds
+    	);
+
+    
 }
