@@ -56,8 +56,9 @@ public class UserController {
     }
     
     @GetMapping("/{userId}/watchlist")
-    public List<Anime> getWatchList(@PathVariable Long userId) {
-        return userService.getWatchListWithRatings(userId);
+    public ResponseEntity<List<Anime>> getWatchList(@PathVariable Long userId) {
+    	List<Anime> watchList = userService.getWatchListWithRatings(userId);
+        return ResponseEntity.ok(watchList);
     }
 }
 

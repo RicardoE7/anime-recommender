@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 const WatchList = ({ userId, openModal }) => {
   const [watchList, setWatchList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20; // Number of items per page
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -12,7 +14,7 @@ const WatchList = ({ userId, openModal }) => {
           throw new Error('Failed to fetch watchlist');
         }
         const data = await response.json();
-        setWatchList(data);
+        setWatchList(data); // Fetch all data and store it in state
       } catch (error) {
         console.error('Error fetching watchlist:', error);
         setErrorMessage('An error occurred while fetching your watchlist. Please try again later.');
@@ -22,13 +24,19 @@ const WatchList = ({ userId, openModal }) => {
     fetchWatchList();
   }, [userId]);
 
+  // Calculate total pages based on the watchlist length
+  const totalPages = Math.ceil(watchList.length / itemsPerPage);
+
+  // Get the results for the current page
+  const currentResults = watchList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <section id="watchlist">
       <h2>Your Watchlist</h2>
       {errorMessage && <p className="text-danger">{errorMessage}</p>}
-      <div id="watchlist-items" className="anime-scroll">
-        {watchList.length > 0 ? (
-          watchList.map((anime) => (
+      <div id="watchlist-items" className="anime-results">
+        {currentResults.length > 0 ? (
+          currentResults.map((anime) => (
             <div key={anime.id} className="anime-card">
               <h3>{anime.title}</h3>
               <img src={anime.coverImage} alt={`${anime.title} Cover`} className="anime-cover" />
@@ -44,8 +52,29 @@ const WatchList = ({ userId, openModal }) => {
           <p>Your watchlist is empty.</p>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {watchList.length > itemsPerPage && (
+        <div className="pagination">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous Page
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next Page
+          </button>
+        </div>
+      )}
     </section>
   );
 };
 
 export default WatchList;
+
+
