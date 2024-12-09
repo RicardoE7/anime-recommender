@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 const WatchList = ({ userId, openModal }) => {
   const [watchList, setWatchList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20; // Number of items per page
+  const itemsPerPage = 20; 
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -14,7 +14,7 @@ const WatchList = ({ userId, openModal }) => {
           throw new Error('Failed to fetch watchlist');
         }
         const data = await response.json();
-        setWatchList(data); // Fetch all data and store it in state
+        setWatchList(data); 
       } catch (error) {
         console.error('Error fetching watchlist:', error);
         setErrorMessage('An error occurred while fetching your watchlist. Please try again later.');
@@ -24,10 +24,8 @@ const WatchList = ({ userId, openModal }) => {
     fetchWatchList();
   }, [userId]);
 
-  // Calculate total pages based on the watchlist length
   const totalPages = Math.ceil(watchList.length / itemsPerPage);
 
-  // Get the results for the current page
   const currentResults = watchList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (

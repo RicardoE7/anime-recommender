@@ -686,16 +686,36 @@ public class AnimeService {
 	        return result.size() > 10 ? result.subList(0, 10) : result;
 	}
 	
-	private Map<String, Double> calculateGenreWeights(List<Anime> userWatchlist) {
-	    Map<String, Double> genreWeights = new HashMap<>();
-	    for (Anime anime : userWatchlist) {
-	        double userRating = anime.getUserRating() != null ? anime.getUserRating() : anime.getAverageScore();
-	        for (String genre : anime.getGenres()) {
-	            genreWeights.put(genre, genreWeights.getOrDefault(genre, 0.0) + userRating);
-	        }
-	    }
-	    return genreWeights;
-	}
+//	private Map<String, Double> calculateGenreWeights(List<Anime> userWatchlist) {
+//	    Map<String, Double> genreWeights = new HashMap<>();
+//	    Map<String, Integer> genreFrequency = new HashMap<>();
+//
+//	    // Accumulate genre scores and frequencies
+//	    for (Anime anime : userWatchlist) {
+//	        double userRating = anime.getUserRating() != null ? anime.getUserRating() : 0.0;
+//	        for (String genre : anime.getGenres()) {
+//	            genreWeights.put(genre, genreWeights.getOrDefault(genre, 0.0) + userRating);
+//	            genreFrequency.put(genre, genreFrequency.getOrDefault(genre, 0) + 1);
+//	        }
+//	    }
+//
+//	    // Adjust weights based on frequency and normalize
+//	    double totalWeight = 0.0;
+//	    for (String genre : genreWeights.keySet()) {
+//	        int frequency = genreFrequency.get(genre);
+//	        double adjustedWeight = (genreWeights.get(genre) / frequency) * Math.log(1 + frequency);
+//	        genreWeights.put(genre, adjustedWeight);
+//	        totalWeight += adjustedWeight;
+//	    }
+//
+//	    // Normalize weights to sum up to 1
+//	    for (String genre : genreWeights.keySet()) {
+//	        genreWeights.put(genre, genreWeights.get(genre) / totalWeight);
+//	    }
+//
+//	    return genreWeights;
+//	}
+
 
 	
 	public List<Anime> getRecommendationsBasedOnWatchlist(List<Anime> userWatchlist) {
@@ -716,9 +736,94 @@ public class AnimeService {
 	        .map(Anime::getId)
 	        .toList();
 
-	    // 4. Query the database for recommendations
-	    return animeRepository.findRecommendedAnimeWithWeights(watchlistIds, topGenres, highlyRatedIds);
+	    // 4. Handle empty cases
+	    if (watchlistIds.isEmpty() || (topGenres.isEmpty() && highlyRatedIds.isEmpty())) {
+	        return List.of(); // Return an empty list if no valid data to query
+	    }
+
+	    // 5. Query the database for potential recommendations
+	    List<Anime> potentialRecommendations = animeRepository.findRecommendedAnimeWithWeights(watchlistIds, topGenres, highlyRatedIds);
+
+	    // 6. Calculate and rank recommendations by genre match score
+	    return potentialRecommendations.stream()
+	        .sorted((a1, a2) -> Double.compare(
+	            calculateAnimeMatchScore(a2, genreWeights),
+	            calculateAnimeMatchScore(a1, genreWeights)
+	        ))
+	        .limit(20) // Customize the number of recommendations
+	        .toList();
 	}
+
+	
+	
+
+
+	
+	private Map<String, Double> calculateGenreWeights(List<Anime> userWatchlist) {
+	    Map<String, Double> genreWeights = new HashMap<>();
+	    Map<String, Integer> genreFrequency = new HashMap<>();
+
+	    // Accumulate genre scores and frequencies
+	    for (Anime anime : userWatchlist) {
+	        double userRating = anime.getUserRating() != null ? anime.getUserRating() : 0.0;
+	        for (String genre : anime.getGenres()) {
+	            genreWeights.put(genre, genreWeights.getOrDefault(genre, 0.0) + userRating);
+	            genreFrequency.put(genre, genreFrequency.getOrDefault(genre, 0) + 1);
+	        }
+	    }
+
+	    // Adjust weights based on frequency and normalize
+	    double totalWeight = 0.0;
+	    for (String genre : genreWeights.keySet()) {
+	        int frequency = genreFrequency.get(genre);
+	        double adjustedWeight = (genreWeights.get(genre) / frequency) * Math.log(1 + frequency);
+	        genreWeights.put(genre, adjustedWeight);
+	        totalWeight += adjustedWeight;
+	    }
+
+	    // Normalize weights to sum up to 1
+	    for (String genre : genreWeights.keySet()) {
+	        genreWeights.put(genre, genreWeights.get(genre) / totalWeight);
+	    }
+
+	    return genreWeights;
+	}
+
+	// Calculate match score for each anime based on genre weights
+	private double calculateAnimeMatchScore(Anime anime, Map<String, Double> genreWeights) {
+	    double matchScore = 0.0;
+
+	    // Sum up weights of matching genres
+	    for (String genre : anime.getGenres()) {
+	        if (genreWeights.containsKey(genre)) {
+	            matchScore += genreWeights.get(genre);
+	        }
+	    }
+
+	    // Boost score for multiple matching genres
+	    long matchingGenresCount = anime.getGenres().stream()
+	                                    .filter(genreWeights::containsKey)
+	                                    .count();
+	    matchScore *= Math.log(1 + matchingGenresCount); // Logarithmic boost for multiple matches
+
+	    return matchScore;
+	}
+
+	// Method to get recommendations by ranking anime based on their match scores
+	public List<Anime> getRecommendations(List<Anime> userWatchlist, List<Anime> allAnime) {
+	    Map<String, Double> genreWeights = calculateGenreWeights(userWatchlist);
+
+	    // Rank all anime by their match scores
+	    return allAnime.stream()
+	        .filter(anime -> !userWatchlist.contains(anime)) // Exclude already watched anime
+	        .sorted((a1, a2) -> Double.compare(
+	            calculateAnimeMatchScore(a2, genreWeights),
+	            calculateAnimeMatchScore(a1, genreWeights)
+	        ))
+	        .limit(20) // Customize the number of recommendations
+	        .toList();
+	}
+
 
 	
 	

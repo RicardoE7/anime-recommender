@@ -104,6 +104,7 @@ public class AnimeController {
     
     @GetMapping("/recommendations/{userId}")
     public ResponseEntity<List<Anime>> getRecommendedAnime(@PathVariable Long userId) {
+    	
         List<Anime> recommendedAnime = animeService.getRecommendationsBasedOnWatchlist(userService.getWatchList(userId));
         return ResponseEntity.ok(recommendedAnime); // Return the top anime as JSON
     }

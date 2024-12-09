@@ -50,5 +50,12 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
     	    @Param("highlyRatedIds") List<Long> highlyRatedIds
     	);
 
+    @Query("SELECT a FROM Anime a WHERE a.id NOT IN :watchlistIds AND (EXISTS (SELECT g FROM a.genres g WHERE g IN :topGenres) OR a.id IN :highlyRatedIds)")
+    List<Anime> findPotentialRecommendations(@Param("watchlistIds") List<Long> watchlistIds, 
+                                             
+                                             @Param("highlyRatedIds") List<Long> highlyRatedIds,@Param("topGenres") List<String> topGenres);
+
+
+
     
 }
