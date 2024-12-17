@@ -749,8 +749,7 @@ public class AnimeService {
 	        .sorted((a1, a2) -> Double.compare(
 	            calculateAnimeMatchScore(a2, genreWeights),
 	            calculateAnimeMatchScore(a1, genreWeights)
-	        ))
-	        .limit(20) // Customize the number of recommendations
+	        ))// Customize the number of recommendations
 	        .toList();
 	}
 
