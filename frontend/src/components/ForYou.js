@@ -40,7 +40,7 @@ const ForYou = ({ openModal, userId }) => {
         }
     }, [userId, currentPage, filtersApplied]);
 
-    // Handle genre selection
+    
     const toggleGenreSelection = (genre) => {
         setSelectedGenres((prevSelected) => {
             const updated = new Set(prevSelected);
@@ -50,26 +50,26 @@ const ForYou = ({ openModal, userId }) => {
         });
     };
 
-    // Apply filters
+    
     const applyFilters = () => {
         const filtered = animeList.filter((anime) =>
             [...selectedGenres].every((selectedGenre) => anime.genres?.includes(selectedGenre))
         );
         setFilteredList(filtered);
         setFiltersApplied(true);
-        setCurrentPage(1); // Reset pagination
+        setCurrentPage(1); 
         setShowFilterWindow(false);
     };
 
-    // Clear filters
+    
     const clearFilters = () => {
         setSelectedGenres(new Set());
-        setFilteredList(animeList); // Reset to the full list
+        setFilteredList(animeList); 
         setFiltersApplied(false);
         setCurrentPage(1);
     };
 
-    // Pagination logic
+    
     const totalPages = Math.ceil(filteredList.length / itemsPerPage);
     const currentResults = filteredList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 

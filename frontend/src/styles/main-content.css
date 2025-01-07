@@ -4,7 +4,6 @@
   
   .sidebar {
     width: 250px; /* Set the width of the sidebar */
-    background-color: #f4f4f4; /* Light gray background */
     padding: 20px; /* Add some padding for spacing */
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
     height: 100vh; /* Make the sidebar stretch to full height */

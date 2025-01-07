@@ -11,6 +11,7 @@ import Register from './components/Register'; // Import the Register component
 import Search from './components/Search'; // Import the Search component
 import Genres from './components/Genres'; // Import the Genres component
 import GenreResults from './components/GenreResults'; // Import the GenreResults component
+import Video from './images/videoplayback.mp4'
 
 const App = () => {
     const [username, setUsername] = React.useState(null);
@@ -25,6 +26,7 @@ const App = () => {
     return (
         <Router>
             <div className="App">
+            <video src={Video} autoPlay loop muted/>
                 <Routes>
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} /> {/* Add Register Route */}
