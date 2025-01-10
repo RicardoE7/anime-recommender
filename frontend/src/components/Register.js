@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/styles.css';
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -105,7 +105,7 @@ const Register = () => {
             <div className="mt-3">
                 <p>
                     Already have an account?{' '}
-                    <button onClick={() => navigate('/login')} className="btn btn-secondary">Log in here</button>
+                    <a href='/login'>Log in here</a>
                 </p>
             </div>
         </div>

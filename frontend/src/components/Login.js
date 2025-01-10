@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/styles.css';
 
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
@@ -72,7 +72,9 @@ const Login = ({ onLogin }) => {
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
             <div className="mt-3">
-                <p>Don't have an account? <a href="/register" className="btn btn-secondary">Register here</a></p>
+                <p>Don't have an account?{' '}
+                <a href='/register'>Register here</a>
+                </p>
             </div>
         </div>
     );

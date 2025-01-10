@@ -217,9 +217,9 @@ header h1{
 }
 
 button {
-    width: 220px;
+    width: 125px;
     height: 50px;
-    border: 4px, Solid, #373b3e;
+    border: 2px, Solid, #373b3e;
     outline: none;
     color: #fff;
     background-color: #00ffff14;
@@ -305,5 +305,52 @@ button:after {
 
 header h1 {
 	text-align: center;
+}
+
+.container {
+    display: flex; /* Use flexbox to align items */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    min-height: 100vh; /* Make container take up full viewport height */
+    max-width: 400px !important; /* Limit the width of the form */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add padding around the container */
+}
+
+form {
+    display: flex; /* Use flexbox for the form itself */
+    flex-direction: column; /* Stack form elements vertically */
+    align-items: center; /* Center items horizontally */
+    width: 100%; /* Make form take up full container width */
+}
+
+.form-group {
+    width: 100%; /* Ensure input fields fill the form width */
+    margin-bottom: 15px; /* Add spacing between inputs */
+}
+
+.form-control {
+    width: 100%; /* Input fields stretch across the form */
+    height: 35px; /* Shorter height for input boxes */
+    font-size: 14px; /* Adjust font size */
+    border-radius: 5px; /* Rounded corners */
+    border: 1px solid #ccc; /* Input border */
+    padding: 5px 10px; /* Inner padding for input */
+}
+
+
+
+h1 {
+    text-align: center; /* Center heading text */
+    margin-bottom: 20px; /* Add space below heading */
+}
+
+.mt-3 p {
+    text-align: center; /* Center-align the paragraph text */
+}
+
+a {
+	color: black;
 }
 
