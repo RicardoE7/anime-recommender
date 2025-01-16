@@ -48,6 +48,10 @@ public class UserService {
         userRepository.save(user);
     }
     
+    public boolean isUsernameTaken(String username) {
+        return userRepository.findByUsername(username) != null;
+    }
+    
     public void save(User user) {
     	userRepository.save(user);
     }
@@ -117,6 +121,50 @@ public class UserService {
             anime.setUserRating(userRating); // Set transient userRating field
             return anime;
         }).collect(Collectors.toList());
+    }
+    
+    // Validate the current password
+    public boolean validatePassword(String username, String currentPassword) {
+        // Find the user by username
+        User userOptional = userRepository.findByUsername(username);
+        System.out.println(userOptional);
+        System.out.println(userOptional.getPassword());
+        // Check if user exists and if the current password matches the stored password
+        if(userOptional != null) {
+        	
+        	return userOptional.getPassword().equals(currentPassword);
+        }
+        else return false;
+    }
+
+    // Update the user profile
+    public void updateUserProfile(String username, String newUsername, String email, String newPassword) {
+        // Find the user by username
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(username));
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            
+            //Update username if provided
+            if (newUsername != null && !newUsername.isBlank()) {
+            	user.setUsername(newUsername);
+            }
+
+            // Update email if provided
+            if (email != null && !email.isBlank()) {
+                user.setEmail(email);
+            }
+
+            // Update password if provided
+            if (newPassword != null && !newPassword.isBlank()) {
+                user.setPassword(newPassword); // Directly set the new password
+            }
+
+            // Save updated user details
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found with username: " + username);
+        }
     }
 
 }

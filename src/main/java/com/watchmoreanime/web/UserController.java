@@ -1,7 +1,9 @@
 package com.watchmoreanime.web;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import com.watchmoreanime.domain.User;
 import com.watchmoreanime.dto.WatchlistRequest;
 import com.watchmoreanime.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController // Changed to RestController
 public class UserController {
     @Autowired
@@ -29,12 +33,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) { // Use RequestBody
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
         try {
+            // Check if username already exists
+            if (userService.isUsernameTaken(user.getUsername())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Username is already taken. Please choose another one.");
+            }
+
             userService.save(user); // Save the user
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully"); // Return success message
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Registration failed. Please try again."); // Handle errors
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Registration failed. Please try again.");
         }
     }
 
@@ -59,6 +69,19 @@ public class UserController {
     public ResponseEntity<List<Anime>> getWatchList(@PathVariable Long userId) {
     	List<Anime> watchList = userService.getWatchListWithRatings(userId);
         return ResponseEntity.ok(watchList);
+    }
+    
+    @GetMapping("/get-user-data")
+    public ResponseEntity<?> getUserData(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("loggedInUser");
+        if (user != null) {
+            Map<String, String> userData = new HashMap<>();
+            userData.put("username", user.getUsername());
+            userData.put("email", user.getEmail());
+            return ResponseEntity.ok(userData);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+        }
     }
 }
 

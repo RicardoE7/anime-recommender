@@ -11,39 +11,42 @@ const Register = () => {
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        if (password !== confirmPassword) {
-            setErrorMessage("Passwords do not match.");
-            return;
+    if (password !== confirmPassword) {
+        setErrorMessage("Passwords do not match.");
+        return;
+    }
+
+    setErrorMessage(''); // Clear any previous error messages
+
+    try {
+        const response = await fetch('http://localhost:8080/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+            }),
+        });
+
+        if (response.ok) {
+            navigate('/login'); // Redirect to login page after successful registration
+        } else if (response.status === 409) {
+            setErrorMessage('Username is already taken. Please choose another one.');
+        } else {
+            const errorData = await response.text();
+            setErrorMessage(errorData || 'Registration failed. Please try again.');
         }
+    } catch (error) {
+        console.error('Registration error:', error);
+        setErrorMessage('An error occurred. Please try again.');
+    }
+};
 
-        setErrorMessage(''); // Clear any previous error messages
-
-        try {
-            const response = await fetch('http://localhost:8080/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password,
-                }),
-            });
-
-            if (response.ok) {
-                navigate('/login'); // Redirect to login page after successful registration
-            } else {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Registration failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('Registration error:', error);
-            setErrorMessage('An error occurred. Please try again.');
-        }
-    };
 
     return (
         <div className="container">
