@@ -1,0 +1,25 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Remove list styles */
+ul, ol {
+    list-style: none;
+}
+
+/* Remove default button styles */
+button {
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* Reset links */
+a {
+    text-decoration: none;
+    color: inherit;
+} 

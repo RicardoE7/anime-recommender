@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/styles.css'; // Add appropriate CSS for styling
+import '../styles/styles.css';  // Restore original import
 
 const ProfileModal = ({ isOpen, onClose, username, email, onSave }) => {
 	const [currentUsername, setCurrentUsername] = useState(username);

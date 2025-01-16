@@ -354,3 +354,25 @@ a {
 	color: black;
 }
 
+/* Loading spinner styles */
+.loading-container {
+    width: 100%;
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+

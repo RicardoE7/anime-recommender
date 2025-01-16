@@ -5,6 +5,7 @@ const ForYou = ({ openModal, userId }) => {
     const [filteredList, setFilteredList] = useState([]); // Filtered data
     const [currentPage, setCurrentPage] = useState(1);
     const [filtersApplied, setFiltersApplied] = useState(false); // Tracks if filters are active
+    const [isLoading, setIsLoading] = useState(true); // Add loading state
     const itemsPerPage = 20;
     const [errorMessage, setErrorMessage] = useState('');
     const [genres, setGenres] = useState([]);
@@ -14,6 +15,7 @@ const ForYou = ({ openModal, userId }) => {
     // Fetch recommendations from the backend
     const fetchRecommendations = async (page) => {
         try {
+            setIsLoading(true); // Set loading to true when fetch starts
             const response = await fetch(`http://localhost:8080/recommendations/${userId}?page=${page}`);
             if (!response.ok) throw new Error('Network response was not ok');
 
@@ -30,6 +32,8 @@ const ForYou = ({ openModal, userId }) => {
         } catch (error) {
             console.error('Error fetching recommendations:', error);
             setErrorMessage('Failed to fetch recommendations. Please try again later.');
+        } finally {
+            setIsLoading(false); // Set loading to false when fetch completes
         }
     };
 
@@ -104,7 +108,15 @@ const ForYou = ({ openModal, userId }) => {
 
             <div className="anime-results">
                 {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                {currentResults.length > 0 ? (
+                
+                {isLoading ? (
+                    // Loading spinner or message
+                    <div className="loading-container">
+                        <div className="loading-spinner"></div>
+                        <p>Loading recommendations...</p>
+                    </div>
+                ) : currentResults.length > 0 ? (
+                    // Show results if available
                     currentResults.map((anime) => (
                         <div key={anime.id} className="anime-card">
                             <h3>{anime.title}</h3>
@@ -118,6 +130,7 @@ const ForYou = ({ openModal, userId }) => {
                         </div>
                     ))
                 ) : (
+                    // Show no results message only if not loading and no results
                     <p>No recommendations available.</p>
                 )}
             </div>
