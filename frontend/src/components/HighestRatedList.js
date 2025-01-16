@@ -49,24 +49,20 @@ const HighestRatedList = ({ highestRated, openModal, userId, refreshData }) => {
   return (
     <section id="highest-rated">
       <h2>Top 10 Highest Rated Anime</h2>
-      <div id="highest-rated-list" className="anime-scroll">
-        {highestRated.map((anime) => {
-          console.log('Anime Cover Image:', anime.coverImage);
-
-          return (
-            <div key={anime.id} className="anime-item anime-card">
-              <h3>{anime.title}</h3>
-              <img src={anime.coverImage} alt={`${anime.title} Cover`} className="anime-cover" />
-              <p>{anime.description ? anime.description.substring(0, 100) + '...' : 'No description available'}</p>
-              <p>Episodes: {anime.episodeCount || 'N/A'}</p>
-              <p>Genres: {anime.genres ? anime.genres.join(', ') : 'N/A'}</p>
-              <p>Score: {anime.averageScore || 'N/A'}</p>
-              <button className="watched-btn" onClick={() => handleSeenItClick(anime)}>Seen It</button>
-              <button className="more-info-btn" onClick={() => openModal(anime)}>More Info</button>
-              {errorMessage && <p className="text-danger">{errorMessage}</p>}
-            </div>
-          );
-        })}
+      <div className="anime-results">
+        {highestRated.map((anime) => (
+          <div key={anime.id} className="anime-card">
+            <h3>{anime.title}</h3>
+            <img src={anime.coverImage} alt={`${anime.title} Cover`} className="anime-cover" />
+            <p>{anime.description ? anime.description.substring(0, 100) + '...' : 'No description available'}</p>
+            <p>Episodes: {anime.episodeCount || 'N/A'}</p>
+            <p>Genres: {anime.genres ? anime.genres.join(', ') : 'N/A'}</p>
+            <p>Score: {anime.averageScore || 'N/A'}</p>
+            <button className="watched-btn" onClick={() => handleSeenItClick(anime)}>Seen It</button>
+            <button className="more-info-btn" onClick={() => openModal(anime)}>More Info</button>
+            {errorMessage && <p className="text-danger">{errorMessage}</p>}
+          </div>
+        ))}
       </div>
     </section>
   );

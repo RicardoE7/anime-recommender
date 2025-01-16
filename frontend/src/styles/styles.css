@@ -83,14 +83,14 @@ header h1{
     background-color: #555;
 }
 
-@font-face {
-  font-family: Nunito;
-  src: url(https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap);
-}
+/* Import Google Font properly */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900&display=swap');
 
-
-.App{
-	font-family: Nunito;
+/* Update the App font-family */
+.App {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    z-index: 1;
 }
 
 /* Modal styling */

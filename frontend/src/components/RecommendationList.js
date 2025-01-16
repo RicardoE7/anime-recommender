@@ -49,7 +49,7 @@ const RecommendationList = ({ recommendations, openModal, userId, refreshData })
   return (
     <section id="most-popular">
       <h2>Top 10 Most Popular Anime</h2>
-      <div id="most-popular-list" className="anime-scroll">
+      <div className="anime-results">
         {recommendations.map((anime) => (
           <div key={anime.id} className="anime-card">
             <h3>{anime.title}</h3>
