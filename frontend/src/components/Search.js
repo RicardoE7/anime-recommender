@@ -90,12 +90,34 @@ const Search = ({ openModal, userId }) => {
 
     return (
         <div>
-            <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for anime..."
-            />
+            <div className="search-container">
+                <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Search for anime..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                />
+            </div>
+
+            {/* Pagination Controls */}
+            {results.length > itemsPerPage && (
+                <div className="pagination">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Previous Page
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next Page
+                    </button>
+                </div>
+            )}
 
             <div id="search-results" className="anime-results">
                 {currentResults.length > 0 ? (

@@ -81,8 +81,10 @@ const ForYou = ({ openModal, userId }) => {
         <div>
             <h2>Recommended Anime for You</h2>
 
-            {/* Filter Dropdown */}
-            <button onClick={() => setShowFilterWindow(true)}>Filter by Genres</button>
+            {/* Filter Button Container */}
+            <div className="filter-button-container">
+                <button onClick={() => setShowFilterWindow(true)}>Filter by Genres</button>
+            </div>
 
             {/* Filter Window */}
             {showFilterWindow && (
@@ -103,6 +105,25 @@ const ForYou = ({ openModal, userId }) => {
                     <button onClick={applyFilters}>Apply Filters</button>
                     <button onClick={clearFilters}>Clear Filters</button>
                     <button onClick={() => setShowFilterWindow(false)}>Close</button>
+                </div>
+            )}
+
+            {/* Pagination Controls */}
+            {filteredList.length > itemsPerPage && (
+                <div className="pagination">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Previous Page
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next Page
+                    </button>
                 </div>
             )}
 

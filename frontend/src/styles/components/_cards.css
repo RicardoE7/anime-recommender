@@ -1,1 +1,22 @@
- 
+.anime-card {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    text-align: center;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    transition: transform 0.2s;
+}
+
+.anime-cover {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: var(--spacing-sm);
+}
+
+.anime-card h3 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.anime-card p {
+    margin: var(--spacing-xs) 0;
+} 

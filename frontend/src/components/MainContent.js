@@ -75,12 +75,6 @@ const MainContent = ({ userId }) => {
 					<li><button onClick={() => setActiveView('recommendations')}>Most Popular</button></li>
 					<li><button onClick={() => setActiveView('search')}>Search</button></li>
 				</ul>
-				<Genres
-					genres={genres}
-					selectedGenre={selectedGenre}
-					onGenreSelect={handleGenreSelect} // Update to handle genre selection
-					clearFilter={clearGenreFilter} // Clear genre filter when needed
-				/>
 			</aside>
 
 			{/* Main Content */}

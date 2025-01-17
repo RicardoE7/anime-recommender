@@ -2,7 +2,6 @@
 header {
     position: relative;
     padding: 10px;
-    border-bottom: 1px solid rgb(17,17,17);
 }
 
 /* Nav styling within the header */
@@ -24,6 +23,7 @@ header nav a:hover {
 
 header h1{
 	align-items: center;
+    color: white;
 }
 
 .anime-scroll {
@@ -356,9 +356,17 @@ a {
 
 /* Loading spinner styles */
 .loading-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    padding: var(--spacing-lg);
+    color: white;
 }
 
 .loading-spinner {
@@ -372,7 +380,114 @@ a {
     margin-bottom: var(--spacing-md);
 }
 
+.loading-container p {
+    font-size: 1.2rem;
+    margin-top: var(--spacing-md);
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* Main content styling */
+h2 {
+    color: white !important;
+    text-align: center !important;
+    margin: 20px 0;
+}
+
+/* Filter and pagination buttons container */
+.filter-window,
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    width: 100%;
+}
+
+/* Center the Filter by Genre button */
+.filter-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* Ensure buttons in these containers stay centered */
+.filter-window button,
+.pagination button {
+    margin: 0 5px;
+}
+
+/* Navigation bar styling */
+.sidebar ul {
+    display: flex;
+    justify-content: center;
+    gap: 60px !important; /* Increased spacing between buttons */
+    flex-wrap: wrap;
+    padding: var(--spacing-lg) 0; /* Add vertical padding */
+}
+
+.sidebar button {
+    min-width: 150px; /* Slightly wider buttons */
+    padding: 10px 20px; /* Add some padding inside buttons */
+    transition: transform 0.2s ease; /* Smooth hover effect */
+}
+
+.sidebar button:hover {
+    transform: scale(1.05); /* Slight grow effect on hover */
+}
+
+/* Make sure the parent container has relative positioning */
+.anime-results {
+    position: relative;
+    min-height: 400px; /* Give enough space for the loading spinner */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: var(--spacing-md);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Search container styling */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.search-input {
+    width: 50%;
+    max-width: 500px;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Footer styling */
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: var(--spacing-md);
+    margin-top: auto; /* Push footer to bottom */
+}
+
+footer p {
+    color: white;
+    text-align: center;
 }
 
